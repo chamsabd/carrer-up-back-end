@@ -5,12 +5,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.bson.types.ObjectId;
+
 
 
 
 @Entity
 public class Session {
-	@Id@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	Long id;
 	String nom;
 	Long idFormation;
@@ -20,7 +23,7 @@ public class Session {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Session( String nom, Long idFormation) {
+	public Session( String nom,Long idFormation) {
 		
 		this.nom = nom;
 		this.idFormation = idFormation;
