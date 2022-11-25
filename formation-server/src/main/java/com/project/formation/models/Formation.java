@@ -2,8 +2,11 @@ package com.project.formation.models;
 
 import java.util.Date;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.validation.constraints.NotNull;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Document (collection="Formation")
 public class Formation {
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	@NotNull(message="name  cannot be null")
 	private String nom;
@@ -22,11 +26,12 @@ public class Formation {
 	private int etat;
 	private int nbrPlace;
 	private Double prix;
+	
 	public Long getId() {
 		return id;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setId(Long id2) {
+		this.id = id2;
 	}
 	public String getNom() {
 		return nom;
@@ -70,9 +75,22 @@ public class Formation {
 	public void setPrix(Double prix) {
 		this.prix = prix;
 	}
+	public Formation(Long id,String nom, String description, Date dateDebut, Date dateFin, int etat, int nbrPlace,
+			Double prix) {
+		super();
+		this.id=id;
+		this.nom = nom;
+		this.description = description;
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
+		this.etat = etat;
+		this.nbrPlace = nbrPlace;
+		this.prix = prix;
+	}
 	public Formation(String nom, String description, Date dateDebut, Date dateFin, int etat, int nbrPlace,
 			Double prix) {
 		super();
+	
 		this.nom = nom;
 		this.description = description;
 		this.dateDebut = dateDebut;
