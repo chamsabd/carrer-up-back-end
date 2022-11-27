@@ -2,16 +2,21 @@ package com.projet.demandeserver.entities;
 
 import java.util.Date;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection="DemandeFormation")
 public class DemandeFormation {
-
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private Date date;
-	private int idSession;
+	private Long idSession;
 	
-	public DemandeFormation(Long id, Date date, int idSession) {
+	public DemandeFormation(Long id, Date date, Long idSession) {
 		super();
 		this.id = id;
 		this.date = date;
@@ -39,11 +44,11 @@ public class DemandeFormation {
 		this.date = date;
 	}
 
-	public int getidSession() {
+	public Long getidSession() {
 		return idSession;
 	}
 
-	public void setidSession(int idSession) {
+	public void setidSession(Long idSession) {
 		this.idSession = idSession;
 	}
 

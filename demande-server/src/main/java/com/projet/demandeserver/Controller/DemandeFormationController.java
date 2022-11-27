@@ -56,9 +56,9 @@ public class DemandeFormationController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "3") int size)  {
        Pageable paging = (Pageable) PageRequest.of(page, size);
-      Page<DemandeFormation> demandesfromation=  repository.findAll(paging);
+      Page<DemandeFormation> demandefromation=  repository.findAll(paging);
        
-      return new ResponseEntity<>(demandesfromation, demandesfromation.getSize() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(demandefromation, demandefromation.getSize() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
  
   }
 }
