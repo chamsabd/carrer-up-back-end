@@ -85,12 +85,14 @@ public class SecurityConfig {
 		 .antMatchers("/logout").permitAll()
 		 .antMatchers("/user").hasAuthority("ROLE_ADMIN")
 		 .anyRequest().authenticated();
+	
 		// http.exceptionHandling().accessDeniedPage("/accessDenied");
 		 http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) ;  
+		  http.addFilterBefore(new JWTAuthorizationFiler(), UsernamePasswordAuthenticationFilter.class);
 		http.addFilter(new JWTAuthenticationFilter(authenticationManager())); 
 		   // http.authenticationProvider(authenticationProvider());
-		    http.addFilterBefore(new JWTAuthorizationFiler(), UsernamePasswordAuthenticationFilter.class);
-		    
+		  
+		 
 	      
 	    return http.build();
 	  }
@@ -102,22 +104,6 @@ public class SecurityConfig {
 	 
 
 
-	private class AuthentificationLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler { 
-		 @Override
-		 public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-			
-			 jwtauth.successfulAuthentication(request,response,null,authentication);
-			// response.setStatus(HttpServletResponse.SC_OK);    
-			 }     } 
-	 
-
-	 private class AuthentificationLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler { 
-		 @Override
-		 public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication  authentication) throws IOException, ServletException { 
-		 response.setStatus(HttpServletResponse.SC_OK); 
-		 
-		 } 
-		 }
 	
 	 @Bean
 	 public AuthenticationProvider getProvider() { 

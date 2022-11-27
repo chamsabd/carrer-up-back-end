@@ -28,7 +28,7 @@ public class JWTAuthorizationFiler extends OncePerRequestFilter {
 		response.addHeader("Access-Control-Allow-Origin", "*"); 
 		response.addHeader("Access-Control-Allow-Headers", "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method,"
 				+ " Access-Control-Request-Headers,authorization");
-		response.addHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin, Access-Control-Allow-Credentials, authorization"); 
+				response.addHeader("Access-Control-Expose-Headers","Access-Control-Allow-Origin, Access-Control-Allow-Credentials, authorization"); 
 		if(request.getMethod().equals("OPTIONS")){ response.setStatus(HttpServletResponse.SC_OK);    
 		} 
 	
@@ -52,5 +52,6 @@ else if(request.getRequestURI().equals("/signin")) {
 		authorities.add(new SimpleGrantedAuthority(roles)); 
 		       
 		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(username, null, authorities);   
-		SecurityContextHolder.getContext().setAuthentication(user); filterChain.doFilter(request, response);       
+		SecurityContextHolder.getContext().setAuthentication(user);
+		filterChain.doFilter(request, response);       
 		}     } }

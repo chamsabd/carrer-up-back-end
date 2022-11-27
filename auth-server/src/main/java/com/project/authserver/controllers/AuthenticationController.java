@@ -49,10 +49,10 @@ import com.project.authserver.request.LoginRequest;
 import com.project.authserver.request.SignupRequest;
 import com.project.authserver.response.JwtResponse;
 import com.project.authserver.response.MessageResponse;
-import com.project.authserver.security.JwtUtils;
+
 import com.project.authserver.security.SecurityParam;
 
-
+@CrossOrigin("*")
 @RestController
 public class AuthenticationController {
 	
@@ -69,9 +69,7 @@ public class AuthenticationController {
 	@Autowired
 	PasswordEncoder encoder;
 
-	@Autowired
-	JwtUtils jwtUtils;
-	
+
 	
 	Boolean in ;
 	String rolefin;
@@ -126,7 +124,7 @@ public class AuthenticationController {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-
+headers.setAccessControlAllowOrigin("*");
 		
 		
 		URI uri = new URI("http://localhost:8085/EMAIL-SERVER/code");
