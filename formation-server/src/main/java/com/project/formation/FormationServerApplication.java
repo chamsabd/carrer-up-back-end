@@ -29,7 +29,7 @@ public class FormationServerApplication implements CommandLineRunner {
 	}
 	@Override
 	public void run(String... args) throws Exception {
-		frepo.save(new Formation((long) 1,"formation1","description1",new Date(),new Date(),1,20,100.0));
+		frepo.save(new Formation((long)1,"formation1","description1","informatique",100.0));
 	
 	}
 	

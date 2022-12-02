@@ -17,17 +17,30 @@ public class Session {
 	Long id;
 	String nom;
 	Long idFormation;
+	Long idReponsable;
 	
 	
 	public Session() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Session( String nom,Long idFormation) {
-		
+	
+	public Long getIdReponsable() {
+		return idReponsable;
+	}
+
+	public void setIdReponsable(Long idReponsable) {
+		this.idReponsable = idReponsable;
+	}
+
+	public Session( String nom, Long idFormation, Long idReponsable) {
+		super();
+	
 		this.nom = nom;
 		this.idFormation = idFormation;
+		this.idReponsable = idReponsable;
 	}
+
 	public Long getId() {
 		return id;
 	}

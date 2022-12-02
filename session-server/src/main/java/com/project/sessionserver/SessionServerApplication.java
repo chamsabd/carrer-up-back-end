@@ -25,7 +25,7 @@ public class SessionServerApplication implements CommandLineRunner {
 	}
 	@Override
 	public void run(String... args) throws Exception {
-		srepo.save(new Session("session1",1L));
+		srepo.save(new Session("session1",1L,2L));
 		
 	}
 

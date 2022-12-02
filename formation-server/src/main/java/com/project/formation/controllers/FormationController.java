@@ -53,7 +53,15 @@ public class FormationController {
 		return new ResponseEntity<>(formations, formations.getSize() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	
 	}
+	@GetMapping("/allformations")
+	  public ResponseEntity<?> getAllFromations()
+	 {
+		
+		List<Formation> formations=  frepo.findAll();
+	     
+		return new ResponseEntity<>(formations, formations.size() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	
+	}	
 
 
 	@GetMapping("/formations/{id}")
@@ -79,12 +87,10 @@ public class FormationController {
 			if (form !=null)
 			{
 				form.setId(id);
-				form.setEtat(f.getEtat());
 				form.setNom(f.getNom());
-				form.setNbrPlace(f.getNbrPlace());
-				form.setDateDebut(f.getDateDebut()); 
-				form.setDateFin(f.getDateFin());
+				form.setCategory(f.getCategory());
 				form.setDescription(f.getDescription());
+				form.setPrix(f.getPrix());
 				frepo.save(form);
 				return new ResponseEntity<>("Updated formation with id "+id+"", HttpStatus.OK);
 				

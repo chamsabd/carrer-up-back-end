@@ -24,11 +24,6 @@ public class Formation {
 	@NotNull(message="name  cannot be null")
 	private String nom;
 	private String description;
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private Date dateDebut;
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private Date dateFin;
-	private int etat;
-	private int nbrPlace;
+
 	private Double prix;
 }
