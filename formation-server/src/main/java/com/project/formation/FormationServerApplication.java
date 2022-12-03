@@ -10,7 +10,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.web.client.RestTemplate;
 
 import com.project.formation.models.Formation;
@@ -19,7 +18,7 @@ import com.project.formation.repositories.FormationRepository;
 
 
 @SpringBootApplication
-@EnableMongoRepositories
+
 public class FormationServerApplication implements CommandLineRunner {
 	@Autowired
 	private FormationRepository frepo;

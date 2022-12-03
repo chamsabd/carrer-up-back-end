@@ -1,4 +1,4 @@
-package com.project.authserver.service;
+package com.project.authserver.Service;
 
 import java.util.ArrayList;
 import java.util.List;

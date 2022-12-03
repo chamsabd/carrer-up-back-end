@@ -57,7 +57,7 @@ public class FormationController {
 	  public ResponseEntity<?> getAllFromations()
 	 {
 		
-		List<Formation> formations=  frepo.findAll();
+		List<Formation> formations=  (List<Formation>) frepo.findAll();
 	     
 		return new ResponseEntity<>(formations, formations.size() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	

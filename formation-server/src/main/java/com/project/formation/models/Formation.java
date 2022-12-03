@@ -3,22 +3,39 @@ package com.project.formation.models;
 
 
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document (collection="Formation")
+
+@Entity
 public class Formation {
 	@Id
-	
-	private Long id;
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	 Long id;
 	@NotNull(message="name  cannot be null")
 	private String nom;
 	private String category;
 	private String description;
 	private double prix;
+	@OneToMany(mappedBy = "formation",
+            cascade = CascadeType.ALL)
+	
+	 Set<Session> sessions;
+	
+	public Set<Session> getSessions() {
+		return sessions;
+	}
+	public void setSessions(Set<Session> sessions) {
+		this.sessions = sessions;
+	}
 	public Long getId() {
 		return id;
 	}
