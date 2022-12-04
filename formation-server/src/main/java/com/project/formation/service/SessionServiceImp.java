@@ -37,9 +37,9 @@ public class SessionServiceImp  implements SessionService{
 	}
 
 	 
-	 public Page<Session> findByFormation(Formation f, int page, int size) {
+	 public Page<Session> findByFormation(Long f, int page, int size) {
 			// TODO Auto-generated method stub
-			return this.sessionRepository.findByIdFormationContaining(f,PageRequest.of(page, size));
+			return this.sessionRepository.findByFormationContaining(f,PageRequest.of(page, size));
 		}
 	 
 	 
@@ -47,14 +47,6 @@ public class SessionServiceImp  implements SessionService{
 		        return this.sessionRepository.findById(id).orElse(null);
 		    }
 		
-	 
-//	public ResponseTemplateVO getSessionWithFormation(Long id) {
-//		
-//		//if(this.sessionRepository.findById(new ObjectId(id)) != null)
-//			Session s = this.getById(id);
-//
-//        Formation f = restTemplate.getForObject("http://formation-server/formations/" + s.getIdFormation(), Formation.class);
-//        return new ResponseTemplateVO(s,f);
-//    }
+
 	
 }

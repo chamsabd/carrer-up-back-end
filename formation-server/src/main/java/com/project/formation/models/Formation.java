@@ -7,29 +7,45 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 
 @Entity
 public class Formation {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	 Long id;
 	@NotNull(message="name  cannot be null")
-	private String nom;
-	private String category;
-	private String description;
-	private double prix;
-	@OneToMany(mappedBy = "formation",
-            cascade = CascadeType.ALL)
-	
+	String nom;
+	 String category;
+	 String description;
+	 double prix;
+
+	 @OneToMany(cascade = CascadeType.ALL)
+	   @JoinColumn(name = "formation_id",referencedColumnName = "id")
 	 Set<Session> sessions;
 	
+	 
+	 
+	public Formation(@NotNull(message = "name  cannot be null") String nom, String category, String description,
+			double prix, Set<Session> sessions) {
+		super();
+		this.nom = nom;
+		this.category = category;
+		this.description = description;
+		this.prix = prix;
+		this.sessions = sessions;
+	}
 	public Set<Session> getSessions() {
 		return sessions;
 	}

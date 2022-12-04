@@ -4,14 +4,15 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import org.springframework.data.repository.CrudRepository;
+
 import org.springframework.data.repository.query.Param;
 
 import com.project.formation.models.Formation;
 
-public interface FormationRepository extends CrudRepository<Formation, Long> {
+public interface FormationRepository extends JpaRepository<Formation, Long> {
 	
 	Page<Formation> findAll(Pageable paging);
 	

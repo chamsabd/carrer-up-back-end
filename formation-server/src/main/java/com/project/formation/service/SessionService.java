@@ -11,8 +11,7 @@ import com.project.formation.models.Session;
 
 public interface SessionService {
 	Page<Session> findAll(int page,int size);
-	
 	Page<Session> findByNom( String nom, int page,int size);
-	Page<Session> findByFormation(Formation f, int page, int size);
+	Page<Session> findByFormation(Long f, int page, int size);
 	//ResponseTemplateVO getSessionWithFormation(Long id);
 }

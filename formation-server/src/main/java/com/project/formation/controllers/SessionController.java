@@ -24,9 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
+@RequestMapping("/sessions")
 public class SessionController {
-	
-
 	@Autowired
 	  SessionService sessionService;
 	@Autowired
@@ -34,7 +33,30 @@ public class SessionController {
 	@Autowired
 	  FormationRepository formationRepository;
 	
-	 @GetMapping("/sessions")
+	
+//    @GetMapping
+//    public List<Session> getSessions(){
+//        return (List<Session>) sessionRepository1.findAll();
+//    }
+    @GetMapping("/{id}")
+    public Optional<Session> getSession(@PathVariable Long id){
+        return sessionRepository1.findById(id);
+    }
+    @PostMapping
+    public Session addSession(@RequestBody Session session){
+        return sessionRepository1.save(session);
+    }
+    @PutMapping("/{id}")
+    public Session addSession(@PathVariable Long id,@RequestBody Session session){
+        return sessionRepository1.save(session);
+    }
+    @DeleteMapping("/{id}")
+    public void deleteSession(@PathVariable Long id){
+        sessionRepository1.deleteById(id);
+    }
+	
+	
+	 @GetMapping
 	  public ResponseEntity<Map<String, Object>> getAllSessions(
 	        @RequestParam(required = false,name="nom") String nom,
 	        @RequestParam(defaultValue = "0",name="page") int page,
@@ -52,7 +74,6 @@ public class SessionController {
 	        pageTuts = sessionService.findByNom(nom, page,size);
 	      
 	      Sessions = pageTuts.getContent();
-	      
 	      Map<String, Object> response = new HashMap<>();
 	      response.put("Sessions", Sessions);
 	      response.put("currentPage", pageTuts.getNumber());
@@ -68,7 +89,7 @@ public class SessionController {
 	 
 	 
 	 
-	 @GetMapping("/{id}/sessions")
+	 @GetMapping("/{id}/formations")
 	  public ResponseEntity<Map<String, Object>> getSessionsparFormation(
 			  @PathVariable("id") Long id,
 	            @RequestParam(defaultValue = "0",name="page") int page,
@@ -87,7 +108,7 @@ public class SessionController {
 	      List<Session> Sessions = new ArrayList<Session>();
 	      Page<Session> pageTuts;
 	      Formation f=formationRepository.getById(Long.valueOf(id));  
-	        pageTuts = sessionService.findByFormation(f,page,size);
+	        pageTuts = sessionService.findByFormation(f.getId(),page,size);
 
 	      Sessions = pageTuts.getContent();
 	      
@@ -100,4 +121,6 @@ public class SessionController {
 	    } catch (Exception e) {
 	    	   return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 	    }}
+	 
+	 
 }
