@@ -3,22 +3,55 @@ package com.project.formation.models;
 
 
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Document (collection="Formation")
+
+
+@Entity
 public class Formation {
 	@Id
-	
-	private Long id;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	 Long id;
 	@NotNull(message="name  cannot be null")
-	private String nom;
-	private String category;
-	private String description;
-	private double prix;
+	String nom;
+	 String category;
+	 String description;
+	 double prix;
+
+	 @OneToMany(cascade = CascadeType.ALL)
+	   @JoinColumn(name = "formation_id",referencedColumnName = "id")
+	 Set<Session> sessions;
+	
+	 
+	 
+	public Formation(@NotNull(message = "name  cannot be null") String nom, String category, String description,
+			double prix, Set<Session> sessions) {
+		super();
+		this.nom = nom;
+		this.category = category;
+		this.description = description;
+		this.prix = prix;
+		this.sessions = sessions;
+	}
+	public Set<Session> getSessions() {
+		return sessions;
+	}
+	public void setSessions(Set<Session> sessions) {
+		this.sessions = sessions;
+	}
 	public Long getId() {
 		return id;
 	}
