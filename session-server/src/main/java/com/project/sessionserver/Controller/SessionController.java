@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.project.sessionserver.entities.Session;
@@ -23,7 +24,7 @@ public class SessionController {
 	
 	@Autowired
 	  SessionService sessionRepository;
-	
+	//@PreAuthorize("hasAnyAuthority('Role_user')")
 	 @GetMapping("/Sessions")
 	  public ResponseEntity<Map<String, Object>> getAllSessions(
 	        @RequestParam(required = false,name="nom") String nom,
