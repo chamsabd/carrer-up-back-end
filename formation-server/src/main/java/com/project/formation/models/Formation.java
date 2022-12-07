@@ -1,37 +1,62 @@
 package com.project.formation.models;
 
-import java.util.Date;
 
+
+
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-@Document (collection="Formation")
+
+
+@Entity
 public class Formation {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	 Long id;
 	@NotNull(message="name  cannot be null")
-	private String nom;
-	private String description;
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private Date dateDebut;
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private Date dateFin;
-	private int etat;
-	private int nbrPlace;
-	private Double prix;
+	String nom;
+	 String category;
+	 String description;
+	 double prix;
+
+	 @OneToMany(cascade = CascadeType.ALL)
+	   @JoinColumn(name = "formation_id",referencedColumnName = "id")
+	 Set<Session> sessions;
 	
+	 
+	 
+	public Formation(@NotNull(message = "name  cannot be null") String nom, String category, String description,
+			double prix, Set<Session> sessions) {
+		super();
+		this.nom = nom;
+		this.category = category;
+		this.description = description;
+		this.prix = prix;
+		this.sessions = sessions;
+	}
+	public Set<Session> getSessions() {
+		return sessions;
+	}
+	public void setSessions(Set<Session> sessions) {
+		this.sessions = sessions;
+	}
 	public Long getId() {
 		return id;
 	}
-	public void setId(Long id2) {
-		this.id = id2;
+	public void setId(Long id) {
+		this.id = id;
 	}
 	public String getNom() {
 		return nom;
@@ -39,64 +64,30 @@ public class Formation {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
 	public String getDescription() {
 		return description;
 	}
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Date getDateDebut() {
-		return dateDebut;
-	}
-	public void setDateDebut(Date dateDebut) {
-		this.dateDebut = dateDebut;
-	}
-	public Date getDateFin() {
-		return dateFin;
-	}
-	public void setDateFin(Date dateFin) {
-		this.dateFin = dateFin;
-	}
-	public int getEtat() {
-		return etat;
-	}
-	public void setEtat(int etat) {
-		this.etat = etat;
-	}
-	public int getNbrPlace() {
-		return nbrPlace;
-	}
-	public void setNbrPlace(int nbrPlace) {
-		this.nbrPlace = nbrPlace;
-	}
-	public Double getPrix() {
+	public double getPrix() {
 		return prix;
 	}
-	public void setPrix(Double prix) {
+	public void setPrix(double prix) {
 		this.prix = prix;
 	}
-	public Formation(Long id,String nom, String description, Date dateDebut, Date dateFin, int etat, int nbrPlace,
-			Double prix) {
+	public Formation(@NotNull(message = "name  cannot be null") String nom, String category, String description,
+			double prix) {
 		super();
-		this.id=id;
 		this.nom = nom;
+		this.category = category;
 		this.description = description;
-		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
-		this.etat = etat;
-		this.nbrPlace = nbrPlace;
-		this.prix = prix;
-	}
-	public Formation(String nom, String description, Date dateDebut, Date dateFin, int etat, int nbrPlace,
-			Double prix) {
-		super();
-	
-		this.nom = nom;
-		this.description = description;
-		this.dateDebut = dateDebut;
-		this.dateFin = dateFin;
-		this.etat = etat;
-		this.nbrPlace = nbrPlace;
 		this.prix = prix;
 	}
 	public Formation() {
@@ -105,10 +96,18 @@ public class Formation {
 	}
 	@Override
 	public String toString() {
-		return "Formation [id=" + id + ", nom=" + nom + ", description=" + description + ", dateDebut=" + dateDebut
-				+ ", dateFin=" + dateFin + ", etat=" + etat + ", nbrPlace=" + nbrPlace + ", prix=" + prix + "]";
+		return "Formation [id=" + id + ", nom=" + nom + ", category=" + category + ", description=" + description
+				+ ", prix=" + prix + "]";
 	}
-	
-	
-	
+	public Formation(Long id, @NotNull(message = "name  cannot be null") String nom, String category,
+			String description, double prix) {
+		super();
+		this.id = id;
+		this.nom = nom;
+		this.category = category;
+		this.description = description;
+		this.prix = prix;
+	}
+
+
 }
