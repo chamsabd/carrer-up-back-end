@@ -37,7 +37,6 @@ import com.project.authserver.entities.ERole;
 
 
 @Configuration
-
 public class SecurityConfig {
 	public static final String AUTHORITIES_CLAIM_NAME = "roles";
 	@Autowired  
@@ -83,14 +82,18 @@ public class SecurityConfig {
 		 .antMatchers("/code").permitAll() 
 		 .antMatchers("/signup").permitAll() 
 		 .antMatchers("/logout").permitAll()
+		 .antMatchers("/api/v1/validateConnection").permitAll()
+        
 		 .antMatchers("/user").hasAuthority("ROLE_ADMIN")
 		 .anyRequest().authenticated();
 	
 		// http.exceptionHandling().accessDeniedPage("/accessDenied");
 		 http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) ;  
-		  http.addFilterBefore(new JWTAuthorizationFiler(), UsernamePasswordAuthenticationFilter.class);
 		http.addFilter(new JWTAuthenticationFilter(authenticationManager())); 
-		   // http.authenticationProvider(authenticationProvider());
+		  http.addFilterAfter(new JWTAuthorizationFiler(), UsernamePasswordAuthenticationFilter.class);
+			 
+		
+		// http.authenticationProvider(authenticationProvider());
 		  
 		 
 	      
