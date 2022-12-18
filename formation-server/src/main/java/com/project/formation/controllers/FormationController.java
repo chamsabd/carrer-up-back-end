@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,11 +27,12 @@ import com.project.formation.repositories.FormationRepository;
 import org.springframework.data.domain.Sort;
 
 @RestController
+@RequestMapping("/formations")
 public class FormationController {
 	@Autowired
 	private FormationRepository frepo;
 	private NotFoundException e;
-	@PostMapping("/addFormation")
+	@PostMapping
 	public String saveFormation(@RequestBody Formation f) {
 		frepo.save(f);
 		return "Formation ajouter avec succes,son id :"+ f.getId();
@@ -43,7 +45,7 @@ public class FormationController {
 		return frepo.findAll();
 		
 	}*/
-	@GetMapping("/formations")
+	@GetMapping
 	  public ResponseEntity<?> getAlFromationsPage(
 	    @RequestParam(defaultValue = "0") int page,
 	    @RequestParam(defaultValue = "3") int size)  {
@@ -53,10 +55,18 @@ public class FormationController {
 		return new ResponseEntity<>(formations, formations.getSize() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	
 	}
-	
+//	@GetMapping("/allformations")
+//	  public ResponseEntity<?> getAllFromations()
+//	 {
+//		
+//		List<Formation> formations=  (List<Formation>) frepo.findAll();
+//	     
+//		return new ResponseEntity<>(formations, formations.size() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+//	
+//	}	
 
 
-	@GetMapping("/formations/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<?>  getFormation(@PathVariable Long id) throws FormationException {
 		Optional <Formation> fr =frepo.findById(id);
 		if (fr.isPresent()) {
@@ -67,24 +77,23 @@ public class FormationController {
 		
 	
 	}
-	@DeleteMapping("/formations/{id}")
+	@DeleteMapping("/{id}")
 		public void deleteFormation(@PathVariable Long id)
 	{
 				frepo.deleteById(id);
 	}
-	@PutMapping("/formations/{id}")
+	@PutMapping("/{id}")
     public ResponseEntity<?> updateFormation(@PathVariable Long id, @RequestBody Formation f) throws  FormationException 
 	{
 		Formation form = frepo.findById(id).get();
 			if (form !=null)
 			{
 				form.setId(id);
-				form.setEtat(f.getEtat());
 				form.setNom(f.getNom());
-				form.setNbrPlace(f.getNbrPlace());
-				form.setDateDebut(f.getDateDebut()); 
-				form.setDateFin(f.getDateFin());
+				form.setCategory(f.getCategory());
 				form.setDescription(f.getDescription());
+				form.setPrix(f.getPrix());
+				form.setSessions(f.getSessions());
 				frepo.save(form);
 				return new ResponseEntity<>("Updated formation with id "+id+"", HttpStatus.OK);
 				
@@ -131,4 +140,10 @@ public class FormationController {
 		
 	}
 	*/
+	@RequestMapping("/category/{category}")
+	public List <Formation> findByCategory(@PathVariable String category,Pageable pageable){
+		return frepo.findByCategory(category, pageable);
+	}
+	
+	
 }

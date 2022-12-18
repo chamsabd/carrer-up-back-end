@@ -20,12 +20,14 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,12 +49,13 @@ import com.project.authserver.repository.RoleRepository;
 import com.project.authserver.repository.UserRepository;
 import com.project.authserver.request.LoginRequest;
 import com.project.authserver.request.SignupRequest;
+import com.project.authserver.response.ConnValidationResponse;
 import com.project.authserver.response.JwtResponse;
 import com.project.authserver.response.MessageResponse;
 
 import com.project.authserver.security.SecurityParam;
 
-@CrossOrigin("*")
+
 @RestController
 public class AuthenticationController {
 	
@@ -111,6 +114,9 @@ public class AuthenticationController {
 	    
 		return randomString;
 	}
+	
+	
+	
 	
 	
 	
@@ -209,6 +215,7 @@ headers.setAccessControlAllowOrigin("*");
 		      System.out.println(userDetails.getEmail());
 		//ResponseEntity.addHeader("test test","inn");
 		//ResponseEntity.addHeader(SecurityParam.JWT_HEADER_NAME,jwt);
+		    
 		return ResponseEntity.ok(new JwtResponse(jwt, 
 				 userDetails.getId(), 
 				 userDetails.getUsername(), 
@@ -218,6 +225,13 @@ headers.setAccessControlAllowOrigin("*");
 		
 
 	}
+	
+	
+
+
+	
+	
+	
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
@@ -293,8 +307,40 @@ headers.setAccessControlAllowOrigin("*");
 		List<User>u=userRepository.findAll();
 		return ResponseEntity.ok(u);
 	}
+
+
+
+
 	@GetMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletRequest request) throws ServletException {
 		request.logout(); 
 		return new ResponseEntity<String>(HttpStatus.CREATED);}
+	
+
+//@PostMapping(value = "/api/v1/validateToken", produces = {MediaType.APPLICATION_JSON_VALUE})
+//   public ResponseEntity<ConnValidationResponse> validatePost() {
+//	 
+//       return ResponseEntity.ok(
+//       		new ConnValidationResponse("ok",true,HttpMethod.POST.name()));
+//   }
+
+   @GetMapping(value = "/api/v1/validateToken", produces = {MediaType.APPLICATION_JSON_VALUE})
+   public ResponseEntity<ConnValidationResponse> validateGet(HttpServletRequest request) {
+       String username = (String) request.getAttribute("username");
+       String token = (String) request.getAttribute("jwt");
+       List<GrantedAuthority> grantedAuthorities = (List<GrantedAuthority>) request.getAttribute("authorities");
+       return ResponseEntity.ok(
+       		new ConnValidationResponse("ok",HttpMethod.GET.name(),username,token,grantedAuthorities));
+       		
+       		
+   }
+	
+	
 }
+
+
+
+
+
+
+

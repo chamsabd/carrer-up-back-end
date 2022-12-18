@@ -10,27 +10,36 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.web.client.RestTemplate;
 
 import com.project.formation.models.Formation;
+import com.project.formation.models.Session;
 import com.project.formation.repositories.FormationRepository;
+import com.project.formation.repositories.SessionRepository;
 
 
 
 @SpringBootApplication
-@EnableMongoRepositories
+
 public class FormationServerApplication implements CommandLineRunner {
 	@Autowired
 	private FormationRepository frepo;
+	
+	@Autowired
+	private SessionRepository srepo;
 
 	public static void main(String[] args) {
 		SpringApplication.run(FormationServerApplication.class, args);
 	}
 	@Override
 	public void run(String... args) throws Exception {
-		frepo.save(new Formation((long) 1,"formation1","description1",new Date(),new Date(),1,20,100.0));
+		Formation f=new Formation("formation1","informatique","description1",100.0);
+		frepo.save(f);
 	
+//		Session s=new Session("session1",1L,null);
+//		s.setFormation(f);
+//		srepo.save(s);
+//	
 	}
 	
 
