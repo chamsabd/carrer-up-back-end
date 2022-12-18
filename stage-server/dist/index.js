@@ -7,6 +7,9 @@ var express_1 = __importDefault(require("express"));
 var mongoose_1 = __importDefault(require("mongoose"));
 var stage_model_1 = __importDefault(require("./stage.model"));
 var body_parser_1 = __importDefault(require("body-parser"));
+var PORT = 3000;
+var eurekaHelper = require('./eureka-helper');
+eurekaHelper.registerWithEureka("stage-server", PORT);
 var app = (0, express_1["default"])();
 app.use(body_parser_1["default"].json());
 var uri = "mongodb://localhost:27017/carrer_up";
@@ -77,6 +80,6 @@ app.get('/', function (req, res) {
             res.send(stages);
     });
 });
-app.listen(8085, function () {
+app.listen(PORT, function () {
     console.log("server started ...");
 });

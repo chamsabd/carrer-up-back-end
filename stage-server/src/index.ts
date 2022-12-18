@@ -2,6 +2,11 @@ import  express,{Request,response,Response}  from "express";
 import mongoose from "mongoose";
 import Stage from "./stage.model";
 import bodyParser from "body-parser"
+
+
+const PORT = 3000;
+const eurekaHelper = require('./eureka-helper');
+eurekaHelper.registerWithEureka("stage-server",PORT);
 const app = express();
 app.use(bodyParser.json())
 const uri="mongodb://localhost:27017/carrer_up";
@@ -82,7 +87,7 @@ app.get("/stages/:id",(req,res)=>{
     
    
 
-app.listen(8085,()=>{
+app.listen(PORT,()=>{
     console.log("server started ...");
     
 })
