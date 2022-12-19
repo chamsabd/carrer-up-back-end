@@ -22,7 +22,7 @@ var mailconfig = nodemailer_1["default"].createTransport({
 });
 var sb_host = "http://127.0.0.1:8085";
 var app = (0, express_1["default"])();
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 3001;
 var eurekaHelper = require('./eurekaHelper');
 app.listen(PORT, function () {
     console.log("inscrit-service on 3000");
