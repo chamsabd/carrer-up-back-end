@@ -12,13 +12,13 @@ var body_parser_1 = __importDefault(require("body-parser"));
 var axios_1 = __importDefault(require("axios"));
 var inscrit_model_1 = __importDefault(require("./inscrit.model"));
 var mailconfig = nodemailer_1["default"].createTransport({
-    port: 465,
-    host: "smtp.gmail.com",
+    port: 587,
+    host: "smtp-mail.outlook.com",
     auth: {
-        user: "isetb48@gmail.com",
-        pass: "isetiset123"
+        user: "testdev062022@outlook.fr",
+        pass: "Azerty123MK220"
     },
-    secure: true
+    secure: false
 });
 var sb_host = "http://127.0.0.1:8085";
 var app = (0, express_1["default"])();
@@ -55,15 +55,6 @@ app.get("/inscrit/:id", function (req, resp) {
             resp.send(inscrit);
     });
 });
-/*
-app.put("/inscrit/:id",(req:Request,resp:Response)=>{
-    Inscrit.findByIdAndUpdate(req.params.id,req.body,(err:any)=>{
-        if(err) resp.status(500).send(err);
-        else resp.send("Inscrit updated succeslully");
-    })
-
-});
-*/
 //6)
 app.post("/inscrit", function (req, resp) {
     var inscrit = new inscrit_model_1["default"](req.body);
@@ -99,11 +90,39 @@ app.put("/inscrit/:id/accept", function (req, resp) {
     });
 });
 app.put("/inscrit/:id/refuse", function (req, resp) {
-    inscrit_model_1["default"].findByIdAndUpdate(req.params.id, { "etat": "refuser" }, function (err) {
+    inscrit_model_1["default"].findByIdAndUpdate(req.params.id, { "etat": "refuser" }, function (err, inscrit) {
         if (err)
             resp.status(500).send(err);
         else {
             // Send mail
+            var idUser = inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idUser;
+            /*axios.get(`${sb_host}/USER-SERVER/users/${idUser}`)
+                .then((user)=>{
+                    let userEmail = user.data.Users[0].email
+                    const mailData = {
+                        from: 'From..',
+                        to: userEmail,
+                        subject: 'Votre demande a été refusée',
+                        text: "Votre demande a été refusée",
+                    }
+                    mailconfig.sendMail(mailData, (err, info)=>{
+                        if(err) console.log(err)
+                        if(info) console.log(info)
+                    })
+                    resp.send({message: "updated!"})
+                })*/
+            var mailData = {
+                from: 'testdev062022@outlook.fr',
+                to: "safedhaouadi@bizerte.r-iset.tn",
+                subject: 'A propos votre demande',
+                text: "Votre demande a été refusée"
+            };
+            mailconfig.sendMail(mailData, function (err, info) {
+                if (err)
+                    console.log(err);
+                if (info)
+                    console.log(info);
+            });
             resp.send({ message: "updated!" });
         }
     });
