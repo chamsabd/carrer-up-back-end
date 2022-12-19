@@ -37,6 +37,7 @@ Date dateDebut;
 Date dateFin;
 	@Max(20)
 int nbrPlace;
+	
 	Long idReponsable;
 	
 	Long formation_id;

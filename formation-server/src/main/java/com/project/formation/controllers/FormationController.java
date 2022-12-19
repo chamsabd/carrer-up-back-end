@@ -134,10 +134,7 @@ public class FormationController {
 		catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 		}
-		
 	
-		
-		
 	}
 	*/
 	@RequestMapping("/category/{category}")
