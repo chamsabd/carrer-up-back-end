@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.project.authserver.Service.UserService;
+import com.project.authserver.service.UserService;
 
 
 public class AppAuthProvider extends DaoAuthenticationProvider{

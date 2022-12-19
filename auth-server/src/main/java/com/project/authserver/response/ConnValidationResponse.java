@@ -11,7 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.List;
 import java.util.Set;
 
-@Builder
+
 @Getter
 @ToString
 public class ConnValidationResponse {
