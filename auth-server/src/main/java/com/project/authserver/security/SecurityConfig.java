@@ -32,7 +32,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
-import com.project.authserver.Service.UserService;
+import com.project.authserver.service.UserService;
 import com.project.authserver.entities.ERole;
 
 

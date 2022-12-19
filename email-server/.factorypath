@@ -135,5 +135,4 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-context-support/6.0.2/spring-context-support-6.0.2.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/eclipse/angus/jakarta.mail/1.0.0/jakarta.mail-1.0.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/eclipse/angus/angus-activation/1.0.0/angus-activation-1.0.0.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="false" runInBatchMode="false"/>
 </factorypath>
