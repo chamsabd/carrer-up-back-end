@@ -39,12 +39,15 @@ public class EmailController {
 	 @Autowired
 	    private EmailService emailService;
 
-	    @PostMapping("/code")
+	    @PostMapping("/send")
 	    public String sendMailSimple(@RequestBody Email mail) {
 	        return emailService.sendEmail(mail);
 	    }
 	
-
+	    @PostMapping("/")
+	    public String sendMail(@RequestBody Email mail) {
+	        return emailService.sendEmail(mail);
+	    }
 
 	
 }
