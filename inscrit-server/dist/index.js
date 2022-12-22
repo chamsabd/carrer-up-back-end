@@ -31,7 +31,7 @@ eurekaHelper.registerWithEureka('Inscrit-service', PORT);
 //7)
 app.use(body_parser_1["default"].json());
 //4)
-var uri = "mongodb://localhost:27017/carrer_up2";
+var uri = "mongodb://localhost:27017/carrer_up";
 mongoose_1["default"].connect(uri, function (err) {
     if (err)
         console.log(err);
@@ -45,6 +45,14 @@ app.get("/inscrit", function (req, resp) {
             resp.status(500).send(err);
         else
             resp.send(inscrit);
+    });
+});
+app.get("/inscrit/accepted", function (req, resp) {
+    inscrit_model_1["default"].find({ "etat": "accepter" })
+        .then(function (inscrits) {
+        resp.send(inscrits);
+    })["catch"](function (err) {
+        resp.status(500).send(err);
     });
 });
 app.get("/inscrit/:id", function (req, resp) {
@@ -73,19 +81,30 @@ app.put("/inscrit/:id/accept", function (req, resp) {
         if (err)
             return resp.send(err);
         var idSession = inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idSession;
-        console.log(idSession);
         // heya ta3ml fel formation fonction ta3ml -1 l nbrPlace par id Session
-        axios_1["default"].get("".concat(sb_host, "/SESSION-SERVER/").concat(idSession, "/sessions"))
+        axios_1["default"].get("".concat(sb_host, "/FORMATION-SERVER/sessions/").concat(idSession))
             .then(function (session) {
-            var idFormation = session.data.Sessions[0].idFormation;
-            axios_1["default"].get("".concat(sb_host, "/formations/").concat(idFormation))
-                .then(function (formation) {
-                //console.log(formation.data)
-                resp.send(formation);
-            })["catch"](function (err) {
-                console.log("err");
-                console.log(err);
+            if (session.data == null)
+                return resp.status(404).send({ message: "Session not found" });
+            var newSession = session.data;
+            newSession.nbrPlace -= 1;
+            axios_1["default"].put("".concat(sb_host, "/FORMATION-SERVER/sessions/").concat(idSession), newSession)
+                .then(function (nSession) {
+                inscrit_model_1["default"].findByIdAndUpdate({ "_id": req.params.id }, { "etat": "accepter" }, function (err, inscrit) {
+                    if (err)
+                        return resp.send("Error !");
+                    resp.status(200).json({ message: "You have accepted", inscrit: inscrit });
+                });
             });
+            /*let idFormation = session.data.formation_id
+            axios.get(`${sb_host}/FORMATION-SERVER/formations/${idFormation}`)
+                .then((formation)=>{
+                    console.log(formation.data)
+                    resp.send(formation.data)
+                })
+                .catch(err=>{
+                    console.log("err")
+                })*/
         });
     });
 });
@@ -111,18 +130,6 @@ app.put("/inscrit/:id/refuse", function (req, resp) {
                     })
                     resp.send({message: "updated!"})
                 })*/
-            var mailData = {
-                from: 'testdev062022@outlook.fr',
-                to: "safedhaouadi@bizerte.r-iset.tn",
-                subject: 'A propos votre demande',
-                text: "Votre demande a été refusée"
-            };
-            mailconfig.sendMail(mailData, function (err, info) {
-                if (err)
-                    console.log(err);
-                if (info)
-                    console.log(info);
-            });
             resp.send({ message: "updated!" });
         }
     });
