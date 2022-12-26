@@ -1,6 +1,7 @@
 import express,{Request,Response} from "express";
 //1)
 import mongoose from "mongoose";
+import cors from 'cors'
 import nodemailer from 'nodemailer'
 
 
@@ -31,6 +32,7 @@ app.listen(PORT, () => {
 
 eurekaHelper.registerWithEureka('Inscrit-service', PORT);
 //7)
+app.use(cors())
 app.use(bodyParser.json())
 //4)
 const uri="mongodb://localhost:27017/carrer_up";
@@ -43,11 +45,13 @@ mongoose.connect(uri,(err)=>{
 app.get("/inscrit",(req:Request,resp:Response)=>{
     Inscrit.find((err,inscrit)=>{   
     if (err) resp.status(500).send(err); 
-    else resp.send(inscrit);   
+    else{
+        resp.send(inscrit)
+    };   
 });    
 });
 app.get("/inscrit/accepted",(req:Request,resp:Response)=>{
-    Inscrit.find({"etat": "accepter"})
+    Inscrit.find({"etat": "accepted"})
         .then((inscrits)=>{   
             resp.send(inscrits);   
         })
@@ -75,10 +79,11 @@ app.post("/inscrit",(req:Request,resp:Response)=>{
     });
 });
 
-app.put("/inscrit/:id/accept", (req: Request, resp: Response)=>{
+app.put("/inscrit/accept", (req: Request, resp: Response)=>{
+    let idInscrip = req.body.id
     // Send put request here !
-    Inscrit.findOne({"_id": req.params.id}, (err: any, inscrit: any)=>{
-        if (err) return resp.send(err)
+    Inscrit.findOne({"_id": idInscrip}, (err: any, inscrit: any)=>{
+        if (err) return resp.send("err")
         let idSession = inscrit?.toObject().idSession
 
         
@@ -89,12 +94,16 @@ app.put("/inscrit/:id/accept", (req: Request, resp: Response)=>{
                 newSession.nbrPlace-=1
                 axios.put(`${sb_host}/FORMATION-SERVER/sessions/${idSession}`, newSession)
                     .then((nSession)=>{
-                        Inscrit.findByIdAndUpdate({"_id": req.params.id}, {"etat": "accepter"}, (err: any, inscrit: any)=>{
+                        Inscrit.findByIdAndUpdate({"_id": idInscrip}, {"etat": "accepted"}, (err: any, inscrit: any)=>{
                             if(err) return resp.send("Error !")
-                            resp.status(200).json({message: "You have accepted", inscrit: inscrit})
+                            inscrit.etat="accepted"
+                            resp.status(200).json(inscrit)
                         })
                     })
-
+                    .catch((error)=>{
+                        console.log("error")
+                        resp.status(500).json({message: "Error"})
+                    })
                 /*let idFormation = session.data.formation_id
                 axios.get(`${sb_host}/FORMATION-SERVER/formations/${idFormation}`)
                     .then((formation)=>{
@@ -108,8 +117,9 @@ app.put("/inscrit/:id/accept", (req: Request, resp: Response)=>{
     })
 })
 
-app.put("/inscrit/:id/refuse", (req: Request, resp: Response)=>{
-    Inscrit.findByIdAndUpdate(req.params.id, {"etat": "refuser"}, (err, inscrit: any)=>{
+app.put("/inscrit/refuse", (req: Request, resp: Response)=>{
+    let idInscrip = req.body.id
+    Inscrit.findByIdAndUpdate(idInscrip, {"etat": "refused"}, (err, inscrit: any)=>{
         if(err) resp.status(500).send(err);
         else {
             // Send mail
@@ -129,7 +139,8 @@ app.put("/inscrit/:id/refuse", (req: Request, resp: Response)=>{
                     })
                     resp.send({message: "updated!"})
                 })*/
-            resp.send({message: "updated!"})
+            inscrit.etat="refused"
+            resp.status(200).json(inscrit)
         }
     })
 })
@@ -148,6 +159,20 @@ app.get('/inscritParPage',(req:Request,res:Response)=>{
         else res.send(inscrit);
     });
 })
+
+
+
+app.get('/inscritSearch',(req:Request,res:Response)=>{
+    const search = req.query.search || '';
+    const page:number = parseInt(req.query.page?.toString()||'1');
+    const size:number = parseInt(req.query.size?.toString()||'5');
+
+    Inscrit.paginate({etat:{$regex:".*(?i)"+search+".*"}},{page:page,limit:size},(err:any,inscrit:any)=>{
+        if(err) res.status(500).send(err);
+        else res.send(inscrit);
+    });
+    
+});
 */
 app.get("/",(req,resp)=>{
     resp.send("hello express !")
