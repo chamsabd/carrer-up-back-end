@@ -17,7 +17,7 @@ var Eureka = require('eureka-client').Eureka;
 //);
 var eurekaHost = (process.env.EUREKA_CLIENT_SERVICEURL_DEFAULTZONE || '127.0.0.1');
 var eurekaPort = 8761;
-var hostName = (process.env.HOSTNAME || 'localhost');
+var hostName = 'localhost';
 var ipAddr = '172.0.0.1';
 exports.registerWithEureka = function (appName, PORT) {
     var client = new Eureka({

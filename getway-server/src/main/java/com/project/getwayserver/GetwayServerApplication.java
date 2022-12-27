@@ -18,12 +18,22 @@ public class GetwayServerApplication {
 	@Bean 
 	DiscoveryClientRouteDefinitionLocator dynamicRoutes(ReactiveDiscoveryClient rdc,DiscoveryLocatorProperties dlp) {
 		return new DiscoveryClientRouteDefinitionLocator(rdc, dlp); }
+
+	//@Bean  
+	//RouteLocator routes(RouteLocatorBuilder builder) {
+//		return builder.routes().route(r -> r.path("/books/**").uri("http://localhost:3000")).build();  
+//		} 
+	//	
+	// @Bean   RouteLocator routes1(RouteLocatorBuilder builder) {
+//	 	return builder.routes().route(r -> r.path("/societes/**").uri("lb://SERVICE-SOCIETE")).build();
+//	 	} 
+	
 @Bean  
 RouteLocator routes(RouteLocatorBuilder builder) {
 	return builder.routes().route(r ->
 		
 		
-	r.path("/stage-server/**").uri("http://localhost:3000")
+	r.path("/stage-server/**").uri("lb://STAGE-SERVER")
 	
 	
 	)

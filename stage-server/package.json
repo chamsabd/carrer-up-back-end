@@ -24,6 +24,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
+    "cors-anywhere": "^0.4.4",
     "eureka-client": "^1.1.0"
   }
 }

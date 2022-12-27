@@ -7,11 +7,23 @@ var express_1 = __importDefault(require("express"));
 var mongoose_1 = __importDefault(require("mongoose"));
 var stage_model_1 = __importDefault(require("./stage.model"));
 var body_parser_1 = __importDefault(require("body-parser"));
+var multer = require('multer');
+var path = require('path');
 var PORT = 3000;
 var eurekaHelper = require('./eureka-helper');
 eurekaHelper.registerWithEureka("stage-server", PORT);
 var app = (0, express_1["default"])();
 app.use(body_parser_1["default"].json());
+app.use(body_parser_1["default"].urlencoded({ extended: true }));
+var store = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './uploads');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '.' + file.originalname);
+    }
+});
+var upload = multer({ storage: store }).single('file');
 var uri = "mongodb://localhost:27017/carrer_up";
 mongoose_1["default"].connect(uri, function (err) {
     if (err) {
@@ -20,7 +32,39 @@ mongoose_1["default"].connect(uri, function (err) {
     else
         console.log("Mongo Data connected ");
 });
+app.post('/file/upload/:id', function (req, res, next) {
+    console.log(req.params["id"]);
+    var id = req.params["id"];
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    upload(req, res, function (err) {
+        if (err) {
+            return res.status(501).json({ error: err });
+        }
+        var filepath = path.join(__dirname, '../uploads') + '/' + req.file.filename;
+        var stage = stage_model_1["default"].findByIdAndUpdate(req.params["id"], {
+            $push: { "cv": { "path": filepath, "name": req.file.originalname, "size": req.file.size, "registername": req.file.filename } }
+        }, { "new": true }, function (err) {
+            if (err)
+                res.status(500).send(err);
+        });
+        console.log(stage);
+        //do all database record saving activity
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        return res.json({ originalname: req.file.originalname, uploadname: req.file.filename });
+    });
+});
+app.post('/file/download', function (req, res, next) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    var filepath = path.join(__dirname, '../uploads') + '/' + req.body.filename;
+    //  res.sendFile(filepath);
+    var o = req.body.filename;
+    console.log(o);
+    var arr = o.substring(o.indexOf('.') + 1);
+    console.log(arr);
+    res.download(filepath, arr, null);
+});
 app.post("/stages", function (req, res) {
+    console.log("stage " + req.body.societe);
     var stage = new stage_model_1["default"](req.body);
     stage.save(function (err) {
         if (err)
@@ -34,7 +78,7 @@ app.put("/stages/:id", function (req, res) {
         if (err)
             res.status(500).send(err);
         else
-            res.send("stage update");
+            res.send(req.body);
     });
 });
 app.get("/stages", function (req, res) {
