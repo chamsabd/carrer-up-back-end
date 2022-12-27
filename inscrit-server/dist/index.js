@@ -7,12 +7,12 @@ var express_1 = __importDefault(require("express"));
 //1)
 var mongoose_1 = __importDefault(require("mongoose"));
 var cors_1 = __importDefault(require("cors"));
-var nodemailer_1 = __importDefault(require("nodemailer"));
+//import nodemailer from 'nodemailer'
 //8)
 var body_parser_1 = __importDefault(require("body-parser"));
 var axios_1 = __importDefault(require("axios"));
 var inscrit_model_1 = __importDefault(require("./inscrit.model"));
-var mailconfig = nodemailer_1["default"].createTransport({
+/*const mailconfig = nodemailer.createTransport({
     port: 587,
     host: "smtp-mail.outlook.com",
     auth: {
@@ -20,7 +20,7 @@ var mailconfig = nodemailer_1["default"].createTransport({
         pass: "Azerty123MK220"
     },
     secure: false
-});
+})*/
 var sb_host = "http://127.0.0.1:8085";
 var app = (0, express_1["default"])();
 var PORT = process.env.PORT || 3001;
@@ -90,32 +90,50 @@ app.put("/inscrit/accept", function (req, resp) {
             .then(function (session) {
             if (session.data == null)
                 return resp.status(404).send({ message: "Session not found" });
-            var newSession = session.data;
-            newSession.nbrPlace -= 1;
-            axios_1["default"].put("".concat(sb_host, "/FORMATION-SERVER/sessions/").concat(idSession), newSession)
-                .then(function (nSession) {
-                inscrit_model_1["default"].findByIdAndUpdate({ "_id": idInscrip }, { "etat": "accepted" }, function (err, inscrit) {
-                    if (err)
-                        return resp.send("Error !");
-                    inscrit.etat = "accepted";
-                    resp.status(200).json(inscrit);
+            if (session.data.nbrPlace > 0) {
+                var newSession = session.data;
+                newSession.nbrPlace -= 1;
+                axios_1["default"].put("".concat(sb_host, "/FORMATION-SERVER/sessions/").concat(idSession), newSession)
+                    .then(function (nSession) {
+                    inscrit_model_1["default"].findByIdAndUpdate({ "_id": idInscrip }, { "etat": "accepted" }, function (err, inscrit) {
+                        if (err)
+                            return resp.send("Error !");
+                        // Send mail
+                        var idUser = inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idUser;
+                        var mailData = {
+                            to: 'safadhaouadi319@gmail.com',
+                            subject: 'Votre demande a été accepter',
+                            text: "Votre demande a été accepter"
+                        };
+                        axios_1["default"].post("".concat(sb_host, "/EMAIL-SERVER/send"), mailData)
+                            .then(function (res_email) {
+                            inscrit.etat = "accepted";
+                            resp.status(200).send({ message: "accepted" });
+                        })["catch"](function (err) {
+                            console.log("error");
+                            resp.status(500).send({ message: "mail error" });
+                        });
+                    });
+                })["catch"](function (error) {
+                    console.log("error");
+                    resp.status(500).json({ message: "Error" });
                 });
-            })["catch"](function (error) {
-                console.log("error");
-                resp.status(500).json({ message: "Error" });
-            });
-            /*let idFormation = session.data.formation_id
-            axios.get(`${sb_host}/FORMATION-SERVER/formations/${idFormation}`)
-                .then((formation)=>{
-                    console.log(formation.data)
-                    resp.send(formation.data)
-                })
-                .catch(err=>{
-                    console.log("err")
-                })*/
+            }
+            else {
+                return resp.status(404).send({ message: "place not found" });
+            }
         });
     });
 });
+/*let idFormation = session.data.formation_id
+             axios.get(`${sb_host}/FORMATION-SERVER/formations/${idFormation}`)
+                 .then((formation)=>{
+                     console.log(formation.data)
+                     resp.send(formation.data)
+                 })
+                 .catch(err=>{
+                     console.log("err")
+                 })*/
 app.put("/inscrit/refuse", function (req, resp) {
     var idInscrip = req.body.id;
     inscrit_model_1["default"].findByIdAndUpdate(idInscrip, { "etat": "refused" }, function (err, inscrit) {
@@ -124,7 +142,23 @@ app.put("/inscrit/refuse", function (req, resp) {
         else {
             // Send mail
             var idUser = inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idUser;
-            /*axios.get(`${sb_host}/USER-SERVER/users/${idUser}`)
+            var mailData = {
+                to: 'safadhaouadi319@gmail.com',
+                subject: 'Votre demande a été refusée',
+                text: "Votre demande a été refusée"
+            };
+            axios_1["default"].post("".concat(sb_host, "/EMAIL-SERVER/send"), mailData)
+                .then(function (res_email) {
+                inscrit.etat = "refused";
+                resp.status(200).send({ message: "refused" });
+            })["catch"](function (err) {
+                console.log("error");
+                resp.status(500).send({ message: "mail error" });
+            });
+        }
+    });
+});
+/*axios.get(`${sb_host}/USER-SERVER/users/${idUser}`)
                 .then((user)=>{
                     let userEmail = user.data.Users[0].email
                     const mailData = {
@@ -139,11 +173,6 @@ app.put("/inscrit/refuse", function (req, resp) {
                     })
                     resp.send({message: "updated!"})
                 })*/
-            inscrit.etat = "refused";
-            resp.status(200).json(inscrit);
-        }
-    });
-});
 app["delete"]("/inscrit/:id", function (req, resp) {
     inscrit_model_1["default"].findByIdAndDelete(req.params.id, function (err, Inscrit) {
         if (err)
