@@ -20,8 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class securityconfig {
 	public static final String AUTHORITIES_CLAIM_NAME = "roles";
-	@Autowired  
-	UserService userDetailsService;
 	
 	
 //	@Autowired

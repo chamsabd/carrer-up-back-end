@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class DefaultConfig {
 
 	//@Value("${spring.gateway.excludedURLsNew}")
-    private String urlsStrings="/api/v1/validateToken,/signin,/code,/signup";
+    private String urlsStrings="/api/v1/validateToken,/signin,/code,/signup,/send";
 
     @Bean
     @Qualifier("excludedUrls")
@@ -61,25 +61,25 @@ public class DefaultConfig {
                                         .filter(authFilter.apply(
                                                 new AuthenticationPrefilter.Config())))
                         .uri("lb://AUTH-SERVER"))
-                .route("EMAIL-SERVER", r -> r.path("/EMAIL-SERVER/**")
+                .route("email-server", r -> r.path("/email-server/**")
                         .filters(f ->
-                                f.rewritePath("/EMAIL-SERVER(?<segment>/?.*)", "$\\{segment}")
+                                f.rewritePath("/email-server(?<segment>/?.*)", "$\\{segment}")
                                         .filter(authFilter.apply(
                                                 new AuthenticationPrefilter.Config())))
                         .uri("lb://EMAIL-SERVER"))
-//                .route("formation-server", r -> r.path("/formation-server/**")
-//                        .filters(f ->
-//                                f.rewritePath("/formation-server(?<segment>/?.*)", "$\\{segment}")
-//                                        .filter(authFilter.apply(
-//                                                new AuthenticationPrefilter.Config())))
-//                        .uri("lb://FORMATION-SERVER"))
-                .route("session-server", r -> r.path("/session-server/**")
+                .route("formation-server", r -> r.path("/formation-server/**")
                         .filters(f ->
-                                f.rewritePath("/session-server(?<segment>/?.*)", "$\\{segment}")
+                                f.rewritePath("/formation-server(?<segment>/?.*)", "$\\{segment}")
                                         .filter(authFilter.apply(
-                                                new AuthenticationPrefilter.Config())
-                                        		))
-                        .uri("lb://SESSION-SERVER"))
+                                          new AuthenticationPrefilter.Config())))
+                        .uri("lb://FORMATION-SERVER"))
+
+                .route("stage-server", r -> r.path("/stage-server/**")
+                        .filters(f ->
+                                f.rewritePath("/stage-server(?<segment>/?.*)", "$\\{segment}")
+                                        .filter(authFilter.apply(
+                                          new AuthenticationPrefilter.Config())))
+                        .uri("lb://STAGE-SERVER"))
                 .build();
     }
 }

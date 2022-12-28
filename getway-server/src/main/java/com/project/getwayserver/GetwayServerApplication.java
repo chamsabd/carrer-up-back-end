@@ -5,7 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.ReactiveDiscoveryClient;
 import org.springframework.cloud.gateway.discovery.DiscoveryClientRouteDefinitionLocator;
 import org.springframework.cloud.gateway.discovery.DiscoveryLocatorProperties;
+
 import org.springframework.cloud.openfeign.EnableFeignClients;
+
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -21,6 +26,24 @@ public class GetwayServerApplication {
 //	DiscoveryClientRouteDefinitionLocator dynamicRoutes(ReactiveDiscoveryClient rdc,DiscoveryLocatorProperties dlp) {
 //		return new DiscoveryClientRouteDefinitionLocator(rdc, dlp); }
 
-	//@Bean
-	//DiscoveryClientRouteDefinitionLocator dynamicRoutes(ReactiveDiscoveryClient rdc,DiscoveryLocatorProperties dlp) { return new DiscoveryClientRouteDefinitionLocator(rdc, dlp); }
-}
+	//@Bean  
+	//RouteLocator routes(RouteLocatorBuilder builder) {
+//		return builder.routes().route(r -> r.path("/books/**").uri("http://localhost:3000")).build();  
+//		} 
+	//	
+	// @Bean   RouteLocator routes1(RouteLocatorBuilder builder) {
+//	 	return builder.routes().route(r -> r.path("/societes/**").uri("lb://SERVICE-SOCIETE")).build();
+//	 	} 
+	
+//@Bean  
+//RouteLocator routes(RouteLocatorBuilder builder) {
+//	return builder.routes().route(r ->
+//		
+//		
+//	r.path("/stage-server/**").uri("lb://STAGE-SERVER")
+//	
+//	
+//	)
+//	.route(r -> r.path("/inscrit-server/**").uri("http://localhost:3001")).build();  
+//	} 
+	}

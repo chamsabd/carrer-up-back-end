@@ -36,7 +36,8 @@ public class JWTAuthorizationFiler extends OncePerRequestFilter {
 
 else if(request.getRequestURI().equals("/signin")) { 
 	filterChain.doFilter(request, response); return;     
-	} else {          
+	} 
+else {          
 		String jwtToken = request.getHeader(SecurityParam.JWT_HEADER_NAME);         
 		System.out.println("Token="+jwtToken); 
 		if (jwtToken == null || !jwtToken.startsWith(SecurityParam.HEADER_PREFIX)) {
@@ -44,7 +45,7 @@ else if(request.getRequestURI().equals("/signin")) {
 		JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SecurityParam.SECRET)).build();  
 		String jwt = jwtToken.substring(SecurityParam.HEADER_PREFIX.length());      
 		DecodedJWT decodedJWT = verifier.verify(jwt);          
-		System.out.println("JWT="+jwt);   
+		System.out.println("JWT="+jwt);
 		String username = decodedJWT.getSubject();    
 		String roles = decodedJWT.getClaims().get("roles").asString();
 		System.out.println("username="+username);     

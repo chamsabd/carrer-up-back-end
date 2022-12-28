@@ -19,8 +19,7 @@ public class AuthenticationServiceRepository {
 	public ConnValidationResponse validateConnection(String authToken) throws Exception {
 
 		try {
-
-			WebClient client = WebClient.builder().baseUrl("lb://authentication-service").build();
+			WebClient client = WebClient.builder().baseUrl("lb://auth-server").build();
 			ConnValidationResponse response = client.get().uri("/api/v1/validateConnection")
 					.header("Authorization", authToken)
 					.retrieve().toEntity(ConnValidationResponse.class).flux().blockFirst().getBody();

@@ -17,7 +17,6 @@ public class SignupRequest {
     @Email
     private String email;
     
-    
 	
 	private String code;
 	
@@ -67,7 +66,7 @@ public class SignupRequest {
 		return prenom;
 	}
 	public String getUsername() {
-		return nom+prenom;
+		return email.split("@")[0];
 	}
 	public void setPrenom(String prenom) {
 		this.prenom = prenom;

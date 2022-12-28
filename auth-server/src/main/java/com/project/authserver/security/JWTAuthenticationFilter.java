@@ -48,6 +48,6 @@ protected void successfulAuthentication(HttpServletRequest request, HttpServletR
 			.withArrayClaim("roles",roles.toArray(new String[roles.size()]))    
 			.withExpiresAt(new Date(System.currentTimeMillis()+SecurityParam.EXPIRATION))
 			.sign(Algorithm.HMAC256(SecurityParam.SECRET));
-	response.addHeader("test test","inn");
+	
 	response.addHeader(SecurityParam.JWT_HEADER_NAME,jwt);  }     } 
 

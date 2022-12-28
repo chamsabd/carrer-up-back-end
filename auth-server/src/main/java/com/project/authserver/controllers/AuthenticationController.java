@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,17 +159,29 @@ public class AuthenticationController {
 		roles.add(userRole);
 	} else {
 		strRoles.forEach(role -> {
-			switch (role) {
+			switch (role.toLowerCase()) {
 			case "admin":
 				Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
 						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 				roles.add(adminRole);
 
 				break;
-			case "mod":
-				Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+			case "resp":
+				Role respRole = roleRepository.findByName(ERole.ROLE_RESPONSABLE)
 						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(modRole);
+				roles.add(respRole);
+
+				break;
+			case "form":
+				Role formRole = roleRepository.findByName(ERole.ROLE_FORMATUER)
+						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(formRole);
+
+				break;
+			case "rh":
+				Role rhRole = roleRepository.findByName(ERole.ROLE_RH)
+						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(rhRole);
 
 				break;
 			default:
@@ -187,12 +200,12 @@ public class AuthenticationController {
 headers.setAccessControlAllowOrigin("*");
 		
 		
-		URI uri = new URI("http://localhost:8085/EMAIL-SERVER/code");
+		URI uri = new URI("http://localhost:8085/email-server/send");
 		Email email = new Email();
 		email.setTo(signupRequest.getEmail());
 		email.setSubject("verif");
-		email.setText("please pass this code to sign up  ");
-		email.setCode(code);
+		email.setText("please pass this code to sign up  "+code);
+		
 
 		HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
 
@@ -208,7 +221,7 @@ headers.setAccessControlAllowOrigin("*");
 	
 
 	@PostMapping("/signin")
-	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,HttpServletRequest request) {
+	public ResponseEntity<?> authenticateUser(HttpServletResponse response,@Valid @RequestBody LoginRequest loginRequest,HttpServletRequest request) {
 
 		
 	
@@ -267,9 +280,11 @@ headers.setAccessControlAllowOrigin("*");
 				.withExpiresAt(new Date(System.currentTimeMillis()+SecurityParam.EXPIRATION))
 				.sign(Algorithm.HMAC256(SecurityParam.SECRET));
 		      System.out.println(userDetails.getEmail());
-		//ResponseEntity.addHeader("test test","inn");
-		//ResponseEntity.addHeader(SecurityParam.JWT_HEADER_NAME,jwt);
-		    
+		
+	     response.addHeader(SecurityParam.JWT_HEADER_NAME, jwt);
+	   
+	    //add the headers to the responseEntity along with yourBody object
+	 
 		return ResponseEntity.ok(new JwtResponse(jwt, 
 				 userDetails.getId(), 
 				 userDetails.getUsername(), 
@@ -328,17 +343,29 @@ headers.setAccessControlAllowOrigin("*");
 		roles.add(userRole);
 	} else {
 		strRoles.forEach(role -> {
-			switch (role) {
+			switch (role.toLowerCase()) {
 			case "admin":
 				Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
 						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 				roles.add(adminRole);
 
 				break;
-			case "mod":
-				Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+			case "resp":
+				Role respRole = roleRepository.findByName(ERole.ROLE_RESPONSABLE)
 						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(modRole);
+				roles.add(respRole);
+
+				break;
+			case "form":
+				Role formRole = roleRepository.findByName(ERole.ROLE_FORMATUER)
+						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(formRole);
+
+				break;
+			case "rh":
+				Role rhRole = roleRepository.findByName(ERole.ROLE_RH)
+						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(rhRole);
 
 				break;
 			default:
