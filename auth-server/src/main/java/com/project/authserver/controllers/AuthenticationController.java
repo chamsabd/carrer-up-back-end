@@ -233,7 +233,7 @@ headers.setAccessControlAllowOrigin("*");
 		
 		
 		User userDetails =  (User) authentication.getPrincipal();
-	
+		User us=userRepository.findUserByUsername(userDetails.getUsername());
 		
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
@@ -286,9 +286,9 @@ headers.setAccessControlAllowOrigin("*");
 	    //add the headers to the responseEntity along with yourBody object
 	 
 		return ResponseEntity.ok(new JwtResponse(jwt, 
-				 userDetails.getId(), 
+		us.getId(), 
 				 userDetails.getUsername(), 
-				 userDetails.getEmail(), 
+				 us.getEmail(), 
 				 rolefin));
 		}
 		

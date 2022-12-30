@@ -25,6 +25,8 @@
   },
   "dependencies": {
     "cors-anywhere": "^0.4.4",
-    "eureka-client": "^1.1.0"
+    "eureka-client": "^1.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "multer": "^1.4.5-lts.1"
   }
 }
