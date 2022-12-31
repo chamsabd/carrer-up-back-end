@@ -86,14 +86,14 @@ app.put("/inscrit/accept", function (req, resp) {
         if (err)
             return resp.send("err");
         var idSession = inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idSession;
-        axios_1["default"].get("".concat(sb_host, "/FORMATION-SERVER/sessions/").concat(idSession))
+        axios_1["default"].get("".concat(sb_host, "/formation-server/sessions/").concat(idSession))
             .then(function (session) {
             if (session.data == null)
                 return resp.status(404).send({ message: "Session not found" });
             if (session.data.nbrPlace > 0) {
                 var newSession = session.data;
                 newSession.nbrPlace -= 1;
-                axios_1["default"].put("".concat(sb_host, "/FORMATION-SERVER/sessions/").concat(idSession), newSession)
+                axios_1["default"].put("".concat(sb_host, "/formation-server/sessions/").concat(idSession), newSession)
                     .then(function (nSession) {
                     inscrit_model_1["default"].findByIdAndUpdate({ "_id": idInscrip }, { "etat": "accepted" }, function (err, inscrit) {
                         if (err)
@@ -126,7 +126,7 @@ app.put("/inscrit/accept", function (req, resp) {
     });
 });
 /*let idFormation = session.data.formation_id
-             axios.get(`${sb_host}/FORMATION-SERVER/formations/${idFormation}`)
+             axios.get(`${sb_host}/formation-server/formations/${idFormation}`)
                  .then((formation)=>{
                      console.log(formation.data)
                      resp.send(formation.data)

@@ -85,14 +85,14 @@ app.put("/inscrit/accept", (req: Request, resp: Response) => {
     Inscrit.findOne({ "_id": idInscrip }, (err: any, inscrit: any) => {
         if (err) return resp.send("err")
         let idSession = inscrit?.toObject().idSession
-        axios.get(`${sb_host}/FORMATION-SERVER/sessions/${idSession}`)
+        axios.get(`${sb_host}/formation-server/sessions/${idSession}`)
             .then((session) => {
                 if (session.data == null) return resp.status(404).send({ message: "Session not found" })
                 if (session.data.nbrPlace > 0) {
                     let newSession = session.data
                     newSession.nbrPlace -= 1
 
-                    axios.put(`${sb_host}/FORMATION-SERVER/sessions/${idSession}`, newSession)
+                    axios.put(`${sb_host}/formation-server/sessions/${idSession}`, newSession)
                         .then((nSession) => {
                             Inscrit.findByIdAndUpdate({ "_id": idInscrip }, { "etat": "accepted" }, (err: any, inscrit: any) => {
                                 if (err) return resp.send("Error !")
@@ -124,7 +124,7 @@ app.put("/inscrit/accept", (req: Request, resp: Response) => {
     })
 })
 /*let idFormation = session.data.formation_id
-             axios.get(`${sb_host}/FORMATION-SERVER/formations/${idFormation}`)
+             axios.get(`${sb_host}/formation-server/formations/${idFormation}`)
                  .then((formation)=>{
                      console.log(formation.data)
                      resp.send(formation.data)

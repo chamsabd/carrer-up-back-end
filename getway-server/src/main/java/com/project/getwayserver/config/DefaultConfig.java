@@ -80,6 +80,12 @@ public class DefaultConfig {
                                         .filter(authFilter.apply(
                                           new AuthenticationPrefilter.Config())))
                         .uri("lb://STAGE-SERVER"))
+                        .route("inscrit-service", r -> r.path("/inscrit-service/**")
+                        .filters(f ->
+                                f.rewritePath("/inscrit-service(?<segment>/?.*)", "$\\{segment}")
+                                        .filter(authFilter.apply(
+                                          new AuthenticationPrefilter.Config())))
+                        .uri("lb://INSCRIT-SERVICE"))
                 .build();
     }
 }
