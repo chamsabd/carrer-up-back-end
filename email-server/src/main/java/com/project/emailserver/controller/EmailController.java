@@ -40,14 +40,17 @@ public class EmailController {
 	    private EmailService emailService;
 
 	    @PostMapping("/send")
+
 	    public String sendMailSimple(@RequestBody Email mail) {
 	        return emailService.sendEmail(mail);
 	    }
 	
-	    @PostMapping("/")
+
+	    @PostMapping("/code")
 	    public String sendMail(@RequestBody Email mail) {
 	        return emailService.sendEmail(mail);
 	    }
+
 
 	
 }

@@ -10,7 +10,7 @@ public class Email implements Serializable {
 	private String to;
     private String subject;
     private String text;
-   
+
 
     public Email() {
     }
@@ -29,7 +29,7 @@ public class Email implements Serializable {
 		this.to = to;
 		this.subject = subject;
 		this.text = text;
-		
+
 	}
 
 	public String getTo() {
@@ -44,7 +44,7 @@ public class Email implements Serializable {
         return subject;
     }
 
-   
+
 	public void setSubject(String subject) {
         this.subject = subject;
     }

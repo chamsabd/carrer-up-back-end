@@ -15,4 +15,7 @@ public interface UserRepository extends MongoRepository<User,String> {
 	  Boolean existsByEmail(String email);
 	  @Query("SELECT id,username FROM User")
 	  List <User> getAllUsers();
+
+	  @Query("{ 'username' : ?0 }")
+User findUserByUsername(String username);
 }

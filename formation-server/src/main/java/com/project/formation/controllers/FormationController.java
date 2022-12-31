@@ -141,6 +141,10 @@ public class FormationController {
 	public List <Formation> findByCategory(@PathVariable String category,Pageable pageable){
 		return frepo.findByCategory(category, pageable);
 	}
-	
+
+    @GetMapping("/categories")
+    public List<String> GetAllCategories(){
+        return frepo.getAllCategories();
+    }
 	
 }
