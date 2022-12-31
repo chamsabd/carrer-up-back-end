@@ -24,5 +24,7 @@ public interface FormationRepository extends JpaRepository<Formation, Long> {
 	 Formation getById(@Param("id") Long id);
 	 
 	void save(Optional<Formation> form);
+	@Query ("SELECT category,count (*) FROM Formation f GROUP BY category ")
+	List<String> getAllCategories();
 }
 
