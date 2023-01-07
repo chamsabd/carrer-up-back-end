@@ -16,10 +16,6 @@ eurekaHelper.registerWithEureka("stage-server", PORT);
 var app = (0, express_1["default"])();
 app.use(body_parser_1["default"].json());
 app.use(body_parser_1["default"].urlencoded({ extended: true }));
-var JWT_HEADER_NAME = "Authorization";
-var SECRET = "chams-carrer-up@gmail.tn";
-var EXPIRATION = 10 * 24 * 3600;
-var HEADER_PREFIX = "Bearer ";
 var store = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './uploads');
@@ -65,12 +61,13 @@ app.post('/file/download', function (req, res, next) {
     var filepath = path.join(__dirname, '../uploads') + '/' + req.body.filename;
     //  res.sendFile(filepath);
     var o = req.body.filename;
-    console.log(o);
     var arr = o.substring(o.indexOf('.') + 1);
-    console.log(arr);
     res.download(filepath, arr, null);
 });
 function validateToken(req, res) {
+    var JWT_HEADER_NAME = "Authorization";
+    var SECRET = "chams-carrer-up@gmail.tn";
+    var HEADER_PREFIX = "Bearer ";
     var tokenHeaderKey = JWT_HEADER_NAME;
     var jwtSecretKey = SECRET;
     try {
@@ -84,12 +81,21 @@ function validateToken(req, res) {
         var verified = jwt.verify(token, jwtSecretKey);
         if (verified) {
             var decode = jwt.decode(token, jwtSecretKey);
-            console.log(decode);
-            if (decode.roles == "ROLE_USER") {
+            if (decode.roles != "ROLE_RH") {
                 var req_url = req.baseUrl + req.route.path;
-                if (req_url.includes("stages/:id") || req.method == "POST") {
+                if (req_url.includes("stages/:id") && (req.method == "POST" || req.method == "PUT")) {
                     return res.status(401).send("Unauthorized!");
                 }
+                else if (req_url.includes("/file/download")) {
+                    return res.status(401).send("Unauthorized!");
+                }
+            }
+            else if (decode.roles != "ROLE_USER") {
+                var req_url = req.baseUrl + req.route.path;
+                if (req_url.includes("/file/upload/:id")) {
+                    return res.status(401).send("Unauthorized!");
+                }
+                return res.status(401).send("Unauthorized!");
             }
         }
         else {

@@ -14,10 +14,7 @@ const app = express();
 app.use(bodyParser.json())
 
 app.use(bodyParser.urlencoded({extended: true}))
-var JWT_HEADER_NAME="Authorization";
-	 var SECRET="chams-carrer-up@gmail.tn"; 
- var EXPIRATION=10*24*3600; 
-	 var HEADER_PREFIX="Bearer "; 
+
 var store = multer.diskStorage({
     destination:function(req:any,file:any,cb:any){
         cb(null, './uploads');
@@ -78,15 +75,19 @@ app.post('/file/download', function(req,res,next){
    var filepath = path.join(__dirname,'../uploads') +'/'+ req.body.filename;
   //  res.sendFile(filepath);
     var o=req.body.filename
-    console.log(o);
+   
     
    var  arr = o.substring(o.indexOf('.')+1);
-   console.log(arr);
+  
  res.download(filepath,arr,null);
 });
 
 
   function  validateToken(req:any, res:any){
+    var JWT_HEADER_NAME="Authorization";
+	 var SECRET="chams-carrer-up@gmail.tn"; 
+
+	 var HEADER_PREFIX="Bearer "; 
     let tokenHeaderKey = JWT_HEADER_NAME;
     let jwtSecretKey = SECRET;
   
@@ -102,12 +103,23 @@ app.post('/file/download', function(req,res,next){
         const verified = jwt.verify(token, jwtSecretKey);
         if(verified){
        var    decode= jwt.decode(token, jwtSecretKey)
-       console.log(decode);
-       if( decode.roles =="ROLE_USER" ){ 
+      
+       if( decode.roles !="ROLE_RH" ){
         let req_url = req.baseUrl+req.route.path;
-        if(req_url.includes("stages/:id") || req.method=="POST" ){
+      
+        if(req_url.includes("stages/:id") && (req.method=="POST" || req.method=="PUT") ){
             return res.status(401).send("Unauthorized!");
         }
+        else if(req_url.includes("/file/download")){
+            return res.status(401).send("Unauthorized!");
+        }
+    }
+   else if (decode.roles !="ROLE_USER") {
+    let req_url = req.baseUrl+req.route.path;
+    if(req_url.includes("/file/upload/:id")){
+        return res.status(401).send("Unauthorized!");
+    }
+    return res.status(401).send("Unauthorized!");
     }
         }else{
             // Access Denied
