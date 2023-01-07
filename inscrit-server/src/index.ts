@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import cors from 'cors'
 //import nodemailer from 'nodemailer'
 
-
+const jwt = require('jsonwebtoken');
 //8)
 import bodyParser from "body-parser";
 import axios from 'axios';
@@ -29,6 +29,45 @@ const eurekaHelper = require('./eurekaHelper');
 app.listen(PORT, () => {
     console.log("inscrit-service on 3000");
 })
+function  validateToken(req:any, res:any){
+    var JWT_HEADER_NAME="Authorization";
+	 var SECRET="chams-carrer-up@gmail.tn"; 
+ var EXPIRATION=10*24*3600; 
+	 var HEADER_PREFIX="Bearer "; 
+    let tokenHeaderKey = JWT_HEADER_NAME;
+    let jwtSecretKey = SECRET;
+  
+    try {
+        const tokenb = req.header(tokenHeaderKey);
+        var  token=tokenb;
+        //return res.status(200).send(token);
+        if (tokenb.startsWith('Bearer ')) {
+            // Remove Bearer from string
+               token=tokenb!.substring(HEADER_PREFIX.length)
+        }
+    
+        const verified = jwt.verify(token, jwtSecretKey);
+        if(verified){
+       var    decode= jwt.decode(token, jwtSecretKey)
+       console.log(decode);
+       if( decode.roles =="ROLE_RESPONSABLE" ){
+        let req_url = req.baseUrl+req.route.path;
+        if(req_url.includes("/inscrit") || req.method=="POST" ){
+            return res.status(401).send("Unauthorized!");
+        }
+    }else{
+        return res.status(401).send("Unauthorized!");
+    }
+        }else{
+            // Access Denied
+            return res.status(401).send("non");
+        }
+    } catch (error) {
+        // Access Denied
+        return res.status(401).send(error);
+    }
+     }
+
 
 eurekaHelper.registerWithEureka('Inscrit-service', PORT);
 //7)

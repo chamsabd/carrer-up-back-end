@@ -8,6 +8,7 @@ var express_1 = __importDefault(require("express"));
 var mongoose_1 = __importDefault(require("mongoose"));
 var cors_1 = __importDefault(require("cors"));
 //import nodemailer from 'nodemailer'
+var jwt = require('jsonwebtoken');
 //8)
 var body_parser_1 = __importDefault(require("body-parser"));
 var axios_1 = __importDefault(require("axios"));
@@ -28,6 +29,45 @@ var eurekaHelper = require('./eurekaHelper');
 app.listen(PORT, function () {
     console.log("inscrit-service on 3000");
 });
+function validateToken(req, res) {
+    var JWT_HEADER_NAME = "Authorization";
+    var SECRET = "chams-carrer-up@gmail.tn";
+    var EXPIRATION = 10 * 24 * 3600;
+    var HEADER_PREFIX = "Bearer ";
+    var tokenHeaderKey = JWT_HEADER_NAME;
+    var jwtSecretKey = SECRET;
+    try {
+        var tokenb = req.header(tokenHeaderKey);
+        var token = tokenb;
+        //return res.status(200).send(token);
+        if (tokenb.startsWith('Bearer ')) {
+            // Remove Bearer from string
+            token = tokenb.substring(HEADER_PREFIX.length);
+        }
+        var verified = jwt.verify(token, jwtSecretKey);
+        if (verified) {
+            var decode = jwt.decode(token, jwtSecretKey);
+            console.log(decode);
+            if (decode.roles == "ROLE_RESPONSABLE") {
+                var req_url = req.baseUrl + req.route.path;
+                if (req_url.includes("/inscrit") || req.method == "POST") {
+                    return res.status(401).send("Unauthorized!");
+                }
+            }
+            else {
+                return res.status(401).send("Unauthorized!");
+            }
+        }
+        else {
+            // Access Denied
+            return res.status(401).send("non");
+        }
+    }
+    catch (error) {
+        // Access Denied
+        return res.status(401).send(error);
+    }
+}
 eurekaHelper.registerWithEureka('Inscrit-service', PORT);
 //7)
 app.use((0, cors_1["default"])());

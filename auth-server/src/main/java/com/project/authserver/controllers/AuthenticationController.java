@@ -35,7 +35,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -200,21 +201,21 @@ public class AuthenticationController {
 headers.setAccessControlAllowOrigin("*");
 		
 		
-		URI uri = new URI("http://localhost:8085/email-server/send");
-		Email email = new Email();
-		email.setTo(signupRequest.getEmail());
-		email.setSubject("verif");
-		email.setText("please pass this code to sign up  "+code);
-		
+		// URI uri = new URI("http://localhost:8085/email-server/send");
+		// Email email = new Email();
+		// email.setTo(signupRequest.getEmail());
+		// email.setSubject("verif");
+		// email.setText("please pass this code to sign up  "+code);
+	return	this.passcode("please pass this code to sign up ",signupRequest.getEmail());
 
-		HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
+		// HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
 
-		RestTemplate restTemplate = new RestTemplate();
-		String res= restTemplate.postForObject(uri, httpEntity,String.class);
+		// RestTemplate restTemplate = new RestTemplate();
+		// String res= restTemplate.postForObject(uri, httpEntity,String.class);
 			
 			//restTemplate.postForObject("http://localhost:8085/EMAIL-SERVER/code/", String.class, null, null);
 		
-		return ResponseEntity.ok(new MessageResponse(code));
+		// return ResponseEntity.ok(new MessageResponse(code));
 		
 		
 	}
@@ -297,8 +298,6 @@ headers.setAccessControlAllowOrigin("*");
 	
 	
 
-
-	
 	
 	
 
@@ -393,11 +392,59 @@ headers.setAccessControlAllowOrigin("*");
 
 
 
+	
+	public ResponseEntity<?> passcode(@RequestBody String text,String emaile) throws URISyntaxException {
+	    code = randomcode();
 
-	@GetMapping("/logout")
-	public ResponseEntity<?> logout(HttpServletRequest request) throws ServletException {
-		request.logout(); 
-		return new ResponseEntity<String>(HttpStatus.CREATED);}
+		URI uri = new URI("http://localhost:8085/email-server/send");
+		Email email = new Email();
+		email.setTo(emaile);
+		email.setSubject("verif");
+		email.setText(text+" "+code);
+		
+
+		HttpEntity<Email> httpEntity = new HttpEntity<>(email);
+
+		RestTemplate restTemplate = new RestTemplate();
+		String res= restTemplate.postForObject(uri, httpEntity,String.class);
+			
+			//restTemplate.postForObject("http://localhost:8085/EMAIL-SERVER/code/", String.class, null, null);
+		
+		return ResponseEntity.ok(new MessageResponse(code));
+		
+		
+	}
+
+
+	@PutMapping("/user/{email}")
+	public ResponseEntity<?> changepass(@PathVariable String email,@RequestBody SignupRequest signupRequest) {
+		User u=userRepository.findUserByEmail(email);
+		if (!signupRequest.getCode().equals(code)) {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Error:code incorrecte!"));
+		}
+		code="-1";
+		u.setPassword(encoder.encode(signupRequest.getPassword()));
+		userRepository.save(u);
+		return ResponseEntity.ok("password changed ");
+	}
+
+	@PostMapping("/sendcode")
+	public ResponseEntity<?> envcodepass(@RequestBody SignupRequest signupRequest) throws URISyntaxException {
+		return	this.passcode("please pass this code to sign up ",signupRequest.getEmail());
+	
+	}
+
+
+		
+
+	@GetMapping("/log")
+	public ResponseEntity<?> log(HttpServletRequest request) throws ServletException {
+	
+		 request.logout(); 
+		return new ResponseEntity<String>(HttpStatus.CREATED);
+	}
 	
 
 //@PostMapping(value = "/api/v1/validateToken", produces = {MediaType.APPLICATION_JSON_VALUE})
