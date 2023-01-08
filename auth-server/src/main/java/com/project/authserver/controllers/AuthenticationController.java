@@ -35,7 +35,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -150,47 +151,22 @@ public class AuthenticationController {
 						 
 						 encoder.encode(signupRequest.getPassword()));
 
-	Set<String> strRoles = signupRequest.getRoles();
+	
 	Set<Role> roles = new HashSet<>();
-
-	if (strRoles == null) {
-		Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+List<User> v=userRepository.getAllUsers();
+if(v.isEmpty()){
+	Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-		roles.add(userRole);
-	} else {
-		strRoles.forEach(role -> {
-			switch (role.toLowerCase()) {
-			case "admin":
-				Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(adminRole);
-
-				break;
-			case "resp":
-				Role respRole = roleRepository.findByName(ERole.ROLE_RESPONSABLE)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(respRole);
-
-				break;
-			case "form":
-				Role formRole = roleRepository.findByName(ERole.ROLE_FORMATUER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(formRole);
-
-				break;
-			case "rh":
-				Role rhRole = roleRepository.findByName(ERole.ROLE_RH)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(rhRole);
-
-				break;
-			default:
-				Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 				roles.add(userRole);
-			}
-		});
-	}
+}
+else{
+	Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(userRole);
+}
+	
+			
+	
 
 	user.setRoles(roles);
 	
@@ -200,21 +176,21 @@ public class AuthenticationController {
 headers.setAccessControlAllowOrigin("*");
 		
 		
-		URI uri = new URI("http://localhost:8085/email-server/send");
-		Email email = new Email();
-		email.setTo(signupRequest.getEmail());
-		email.setSubject("verif");
-		email.setText("please pass this code to sign up  "+code);
-		
+		// URI uri = new URI("http://localhost:8085/email-server/send");
+		// Email email = new Email();
+		// email.setTo(signupRequest.getEmail());
+		// email.setSubject("verif");
+		// email.setText("please pass this code to sign up  "+code);
+	return	this.passcode("please pass this code to sign up ",signupRequest.getEmail());
 
-		HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
+		// HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
 
-		RestTemplate restTemplate = new RestTemplate();
-		String res= restTemplate.postForObject(uri, httpEntity,String.class);
+		// RestTemplate restTemplate = new RestTemplate();
+		// String res= restTemplate.postForObject(uri, httpEntity,String.class);
 			
 			//restTemplate.postForObject("http://localhost:8085/EMAIL-SERVER/code/", String.class, null, null);
 		
-		return ResponseEntity.ok(new MessageResponse(code));
+		// return ResponseEntity.ok(new MessageResponse(code));
 		
 		
 	}
@@ -233,7 +209,7 @@ headers.setAccessControlAllowOrigin("*");
 		
 		
 		User userDetails =  (User) authentication.getPrincipal();
-	
+		User us=userRepository.findUserByUsername(userDetails.getUsername());
 		
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
@@ -268,7 +244,7 @@ headers.setAccessControlAllowOrigin("*");
 		if(in==false) {
 			return ResponseEntity
 					.badRequest()
-					.body(new MessageResponse("Error: you don''t have permission"));
+					.body(new MessageResponse("Error: you don't have permission"));
 		}
 		else {
 		
@@ -286,9 +262,9 @@ headers.setAccessControlAllowOrigin("*");
 	    //add the headers to the responseEntity along with yourBody object
 	 
 		return ResponseEntity.ok(new JwtResponse(jwt, 
-				 userDetails.getId(), 
+		us.getId(), 
 				 userDetails.getUsername(), 
-				 userDetails.getEmail(), 
+				 us.getEmail(), 
 				 rolefin));
 		}
 		
@@ -297,8 +273,6 @@ headers.setAccessControlAllowOrigin("*");
 	
 	
 
-
-	
 	
 	
 
@@ -334,47 +308,22 @@ headers.setAccessControlAllowOrigin("*");
 						 
 						 encoder.encode(signupRequest.getPassword()));
 
-	Set<String> strRoles = signupRequest.getRoles();
+	
 	Set<Role> roles = new HashSet<>();
 
-	if (strRoles == null) {
-		Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-		roles.add(userRole);
-	} else {
-		strRoles.forEach(role -> {
-			switch (role.toLowerCase()) {
-			case "admin":
-				Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(adminRole);
-
-				break;
-			case "resp":
-				Role respRole = roleRepository.findByName(ERole.ROLE_RESPONSABLE)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(respRole);
-
-				break;
-			case "form":
-				Role formRole = roleRepository.findByName(ERole.ROLE_FORMATUER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(formRole);
-
-				break;
-			case "rh":
-				Role rhRole = roleRepository.findByName(ERole.ROLE_RH)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(rhRole);
-
-				break;
-			default:
-				Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(userRole);
-			}
-		});
+	
+	List<User> v=userRepository.getAllUsers();
+	if(v.isEmpty()){
+		Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(userRole);
 	}
+	else{
+		Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(userRole);
+	}
+		
 
 	user.setRoles(roles);
 	
@@ -387,17 +336,86 @@ headers.setAccessControlAllowOrigin("*");
 	}
 @GetMapping("/user")
 	public ResponseEntity<?> user() {
-		List<User>u=userRepository.findAll();
+		List<User>u=userRepository.getAllUserse();
+		return ResponseEntity.ok(u);
+	}
+
+	@PutMapping("/user")
+	public ResponseEntity<?> addrole(@RequestBody SignupRequest sign) {
+		User u=userRepository.findUserByEmail(sign.getEmail());
+		Set<Role> roles = new HashSet<>();
+		Role r=roleRepository.findByNameS(sign.getRoles()).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+		roles.add(r);
+		u.setRoles(roles);
+		userRepository.save(u);
 		return ResponseEntity.ok(u);
 	}
 
 
 
+	
+	public ResponseEntity<?> passcode(@RequestBody String text,String emaile) throws URISyntaxException {
+	    code = randomcode();
 
-	@GetMapping("/logout")
-	public ResponseEntity<?> logout(HttpServletRequest request) throws ServletException {
-		request.logout(); 
-		return new ResponseEntity<String>(HttpStatus.CREATED);}
+		URI uri = new URI("http://localhost:8085/email-server/send");
+		Email email = new Email();
+		email.setTo(emaile);
+		email.setSubject("verif");
+		email.setText(text+" "+code);
+		
+
+		HttpEntity<Email> httpEntity = new HttpEntity<>(email);
+
+		RestTemplate restTemplate = new RestTemplate();
+		String res= restTemplate.postForObject(uri, httpEntity,String.class);
+			
+			//restTemplate.postForObject("http://localhost:8085/EMAIL-SERVER/code/", String.class, null, null);
+		
+		return ResponseEntity.ok(new MessageResponse(code));
+		
+		
+	}
+
+
+	@PutMapping("/changepass")
+	public ResponseEntity<?> changepass(@RequestBody SignupRequest signupRequest) {
+		User u=userRepository.findUserByEmail(signupRequest.getEmail());
+		if (!signupRequest.getCode().equals(code)) {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Error:code incorrecte!"));
+		}
+	
+		u.setPassword(encoder.encode(signupRequest.getPassword()));
+		userRepository.save(u);
+		return ResponseEntity.ok(new MessageResponse("password changed "));
+	}
+
+
+	@PostMapping("/sendcode")
+	public ResponseEntity<?> envcodepass(@RequestBody SignupRequest signupRequest) throws URISyntaxException {
+		User u=userRepository.findUserByEmail(signupRequest.getEmail());
+		if (u!=null) {
+			return	this.passcode("please pass this code to change password ",signupRequest.getEmail());
+	
+		} else {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Error:email not found for any user!"));
+			
+		}
+		
+	}
+
+
+		
+
+	@GetMapping("/log")
+	public ResponseEntity<?> log(HttpServletRequest request) throws ServletException {
+	
+		 request.logout(); 
+		return new ResponseEntity<String>(HttpStatus.CREATED);
+	}
 	
 
 //@PostMapping(value = "/api/v1/validateToken", produces = {MediaType.APPLICATION_JSON_VALUE})

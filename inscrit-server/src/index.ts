@@ -5,6 +5,7 @@ import cors from 'cors'
 //import nodemailer from 'nodemailer'
 
 
+const jwt = require('jsonwebtoken');
 //8)
 import bodyParser from "body-parser";
 import axios from 'axios';
@@ -29,6 +30,45 @@ const eurekaHelper = require('./eurekaHelper');
 app.listen(PORT, () => {
     console.log("inscrit-service on 3000");
 })
+function  validateToken(req:any, res:any){
+    var JWT_HEADER_NAME="Authorization";
+	 var SECRET="chams-carrer-up@gmail.tn"; 
+ var EXPIRATION=10*24*3600; 
+	 var HEADER_PREFIX="Bearer "; 
+    let tokenHeaderKey = JWT_HEADER_NAME;
+    let jwtSecretKey = SECRET;
+  
+    try {
+        const tokenb = req.header(tokenHeaderKey);
+        var  token=tokenb;
+        //return res.status(200).send(token);
+        if (tokenb.startsWith('Bearer ')) {
+            // Remove Bearer from string
+               token=tokenb!.substring(HEADER_PREFIX.length)
+        }
+    
+        const verified = jwt.verify(token, jwtSecretKey);
+        if(verified){
+       var    decode= jwt.decode(token, jwtSecretKey)
+       console.log(decode);
+       if( decode.roles =="ROLE_RESPONSABLE" ){
+        let req_url = req.baseUrl+req.route.path;
+        if(req_url.includes("/inscrit") || req.method=="POST" ){
+            return res.status(401).send("Unauthorized!");
+        }
+    }else{
+        return res.status(401).send("Unauthorized!");
+    }
+        }else{
+            // Access Denied
+            return res.status(401).send("non");
+        }
+    } catch (error) {
+        // Access Denied
+        return res.status(401).send(error);
+    }
+     }
+
 
 eurekaHelper.registerWithEureka('Inscrit-service', PORT);
 //7)
@@ -43,6 +83,7 @@ mongoose.connect(uri, (err) => {
 
 //5)
 app.get("/inscrit", (req: Request, resp: Response) => {
+
     console.log()
     let headers = { authorization: req.headers['authorization'] }
     /* axios.get(`${sb_host}/auth-server/api/v1/validateToken`, { headers: headers})
@@ -52,6 +93,7 @@ app.get("/inscrit", (req: Request, resp: Response) => {
         .catch((err)=>{
             console.log(err)
         }) */
+
 
     Inscrit.find((err, inscrit) => {
         if (err) resp.status(500).send(err);
@@ -79,10 +121,12 @@ app.get("/inscrit/:id", (req: Request, resp: Response) => {
 
 //6)
 app.post("/inscrit", (req: Request, resp: Response) => {
+
    
     let idUser = 1
 
     /*let inscrit = new Inscrit(req.body)
+
     inscrit.save(err => {
         if (err) resp.status(500).send(err);
         else {
@@ -103,19 +147,22 @@ app.post("/inscrit", (req: Request, resp: Response) => {
 app.put("/inscrit/accept", (req: Request, resp: Response) => {
     let idInscrip = req.body.id
     // Send put request here !
-    
+
     let headers = { authorization: req.headers['authorization'] }
     Inscrit.findOne({ "_id": idInscrip }, (err: any, inscrit: any) => {
         if (err) return resp.send("err")
         let idSession = inscrit?.toObject().idSession
         axios.get(`${sb_host}/formation-server/sessions/${idSession}`, {headers: headers})
+
             .then((session) => {
                 if (session.data == null) return resp.status(404).send({ message: "Session not found" })
                 if (session.data.nbrPlace > 0) {
                     let newSession = session.data
                     newSession.nbrPlace -= 1
 
+
                     axios.put(`${sb_host}/formation-server/sessions/${idSession}`, newSession, {headers: headers})
+
                         .then((nSession) => {
                             Inscrit.findByIdAndUpdate({ "_id": idInscrip }, { "etat": "accepted" }, (err: any, inscrit: any) => {
                                 if (err) return resp.send("Error !")
@@ -126,7 +173,9 @@ app.put("/inscrit/accept", (req: Request, resp: Response) => {
                                     subject: 'Votre demande a été accepter',
                                     text: "Votre demande a été accepter",
                                 }
+
                                 axios.post(`${sb_host}/email-server/send`, mailData)
+
                                     .then((res_email) => {
                                         inscrit.etat = "accepted"
                                         resp.status(200).send({ message: "accepted" })
@@ -143,14 +192,18 @@ app.put("/inscrit/accept", (req: Request, resp: Response) => {
                 } else {
                     return resp.status(404).send({ message: "place not found" })
                 }
+
             })
             .catch((err)=>{
                 console.log("err")
+
             })
     })
 })
 /*let idFormation = session.data.formation_id
-             axios.get(`${sb_host}/FORMATION-SERVER/formations/${idFormation}`)
+
+             axios.get(`${sb_host}/formation-server/formations/${idFormation}`)
+
                  .then((formation)=>{
                      console.log(formation.data)
                      resp.send(formation.data)
@@ -170,7 +223,9 @@ app.put("/inscrit/refuse", (req: Request, resp: Response) => {
                 subject: 'Votre demande a été refusée',
                 text: "Votre demande a été refusée",
             }
+
             axios.post(`${sb_host}/email-server/send`, mailData)
+
                 .then((res_email) => {
                     inscrit.etat = "refused"
                     resp.status(200).send({ message: "refused" })
