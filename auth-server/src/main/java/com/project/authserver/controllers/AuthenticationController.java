@@ -267,7 +267,7 @@ headers.setAccessControlAllowOrigin("*");
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
-	String code="12345";
+	
 		if (!signupRequest.getCode().equals(code)) {
 			return ResponseEntity
 					.badRequest()
@@ -417,10 +417,11 @@ headers.setAccessControlAllowOrigin("*");
    @GetMapping(value = "/api/v1/validateToken", produces = {MediaType.APPLICATION_JSON_VALUE})
    public ResponseEntity<ConnValidationResponse> validateGet(HttpServletRequest request) {
        String username = (String) request.getAttribute("username");
+	   String id = (String) request.getAttribute("id");
        String token = (String) request.getAttribute("jwt");
        List<GrantedAuthority> grantedAuthorities = (List<GrantedAuthority>) request.getAttribute("authorities");
        return ResponseEntity.ok(
-       		new ConnValidationResponse("ok",HttpMethod.GET.name(),username,token,grantedAuthorities));
+       		new ConnValidationResponse("ok",HttpMethod.GET.name(),id,token,grantedAuthorities));
        		
        		
    }

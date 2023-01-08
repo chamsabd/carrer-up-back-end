@@ -1,6 +1,9 @@
 package com.project.formation.controllers;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
@@ -10,6 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,15 +61,27 @@ public class FormationController {
 		return new ResponseEntity<>(formations, formations.getSize() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	
 	}
-//	@GetMapping("/allformations")
-//	  public ResponseEntity<?> getAllFromations()
-//	 {
-//		
-//		List<Formation> formations=  (List<Formation>) frepo.findAll();
-//	     
-//		return new ResponseEntity<>(formations, formations.size() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
-//	
-//	}	
+
+class Variable{
+	String role;
+	String id;
+	
+}
+
+	//@body  role  id_user 
+	@GetMapping("/allformations")
+	  public ResponseEntity<?> getAllFromations(@RequestBody Variable c )
+	 {
+		
+  
+
+
+		List<Formation> formations=  (List<Formation>) frepo.findAll();
+
+	     
+		return new ResponseEntity<>(formations, formations.size() > 0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+	
+	}	
 
 
 	@GetMapping("/{id}")
