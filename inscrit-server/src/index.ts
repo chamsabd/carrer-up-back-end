@@ -69,14 +69,24 @@ app.get("/inscrit/:id", (req: Request, resp: Response) => {
 
 //6)
 app.post("/inscrit", (req: Request, resp: Response) => {
-    let inscrit = new Inscrit(req.body)
+    let idUser = 1
+    
+    /*let inscrit = new Inscrit(req.body)
     inscrit.save(err => {
         if (err) resp.status(500).send(err);
         else {
             console.log(inscrit?.toObject().idSession);
             resp.send(inscrit)
         }
-    });
+    });*/
+    Inscrit.create({idSession: req.body.idSession, idUser: idUser})
+        .then((inscrit)=>{
+            console.log(inscrit?.toObject().idSession);
+            resp.send(inscrit)
+        })
+        .catch((err)=>{
+            if (err) resp.status(500).send(err);
+        })
 });
 
 app.put("/inscrit/accept", (req: Request, resp: Response) => {

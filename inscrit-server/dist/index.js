@@ -69,14 +69,22 @@ app.get("/inscrit/:id", function (req, resp) {
 });
 //6)
 app.post("/inscrit", function (req, resp) {
-    var inscrit = new inscrit_model_1["default"](req.body);
-    inscrit.save(function (err) {
+    var idUser = 1;
+    /*let inscrit = new Inscrit(req.body)
+    inscrit.save(err => {
+        if (err) resp.status(500).send(err);
+        else {
+            console.log(inscrit?.toObject().idSession);
+            resp.send(inscrit)
+        }
+    });*/
+    inscrit_model_1["default"].create({ idSession: req.body.idSession, idUser: idUser })
+        .then(function (inscrit) {
+        console.log(inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idSession);
+        resp.send(inscrit);
+    })["catch"](function (err) {
         if (err)
             resp.status(500).send(err);
-        else {
-            console.log(inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idSession);
-            resp.send(inscrit);
-        }
     });
 });
 app.put("/inscrit/accept", function (req, resp) {
