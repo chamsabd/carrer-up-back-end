@@ -13,7 +13,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
-
 import com.project.formation.models.Formation;
 import com.project.formation.models.Session;
 
@@ -27,5 +26,7 @@ public interface SessionRepository  extends JpaRepository<Session,Long>{
 	Page<Session> findByNomContaining(@Param("nom") String nom, Pageable pageable);
 	@Query("SELECT s FROM Session s WHERE s.formation_id= :id")
 	Page<Session> findByFormationContaining(@Param("id") Long id, Pageable pageable);
+	
+
 //	
 }

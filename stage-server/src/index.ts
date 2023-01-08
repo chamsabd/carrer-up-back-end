@@ -85,7 +85,6 @@ app.post('/file/download', function(req,res,next){
   function  validateToken(req:any, res:any){
     var JWT_HEADER_NAME="Authorization";
 	 var SECRET="chams-carrer-up@gmail.tn"; 
-
 	 var HEADER_PREFIX="Bearer "; 
     let tokenHeaderKey = JWT_HEADER_NAME;
     let jwtSecretKey = SECRET;
@@ -106,7 +105,7 @@ app.post('/file/download', function(req,res,next){
        if( decode.roles !="ROLE_RH" ){
         let req_url = req.baseUrl+req.route.path;
       
-        if(req_url.includes("stages/:id") && (req.method=="POST" || req.method=="PUT") ){
+        if(req.method=="POST" || req.method=="PUT"  ){
              res.status(401).send("Unauthorized!");
         }
         else if(req_url.includes("/file/download")){
@@ -118,7 +117,7 @@ app.post('/file/download', function(req,res,next){
     if(req_url.includes("/file/upload/:id")){
          res.status(401).send("Unauthorized!");
     }
-     res.status(401).send("Unauthorized!");
+     
     }
         }else{
             // Access Denied

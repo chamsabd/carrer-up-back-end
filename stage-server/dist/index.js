@@ -80,7 +80,7 @@ function validateToken(req, res) {
             var decode = jwt.decode(token, jwtSecretKey);
             if (decode.roles != "ROLE_RH") {
                 var req_url = req.baseUrl + req.route.path;
-                if (req_url.includes("stages/:id") && (req.method == "POST" || req.method == "PUT")) {
+                if (req.method == "POST" || req.method == "PUT") {
                     res.status(401).send("Unauthorized!");
                 }
                 else if (req_url.includes("/file/download")) {
@@ -92,7 +92,6 @@ function validateToken(req, res) {
                 if (req_url.includes("/file/upload/:id")) {
                     res.status(401).send("Unauthorized!");
                 }
-                res.status(401).send("Unauthorized!");
             }
         }
         else {

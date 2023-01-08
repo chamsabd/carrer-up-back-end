@@ -20,6 +20,8 @@ public interface UserRepository extends MongoRepository<User,String> {
 	  List <User> getAllUserse();
 	  @Query("{ 'username' : ?0 }")
 User findUserByUsername(String username);
+
 @Query("{ 'email' : ?0 }")
 User findUserByEmail(String email);
+
 }

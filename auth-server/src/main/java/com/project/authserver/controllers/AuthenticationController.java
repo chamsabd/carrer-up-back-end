@@ -176,21 +176,14 @@ else{
 headers.setAccessControlAllowOrigin("*");
 		
 		
-		// URI uri = new URI("http://localhost:8085/email-server/send");
-		// Email email = new Email();
-		// email.setTo(signupRequest.getEmail());
-		// email.setSubject("verif");
-		// email.setText("please pass this code to sign up  "+code);
+
 	return	this.passcode("please pass this code to sign up ",signupRequest.getEmail());
+
 
 		// HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
 
-		// RestTemplate restTemplate = new RestTemplate();
-		// String res= restTemplate.postForObject(uri, httpEntity,String.class);
-			
-			//restTemplate.postForObject("http://localhost:8085/EMAIL-SERVER/code/", String.class, null, null);
-		
-		// return ResponseEntity.ok(new MessageResponse(code));
+
+	
 		
 		
 	}
@@ -270,15 +263,11 @@ headers.setAccessControlAllowOrigin("*");
 		
 
 	}
-	
-	
 
-	
-	
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
-	
+	String code="12345";
 		if (!signupRequest.getCode().equals(code)) {
 			return ResponseEntity
 					.badRequest()
