@@ -4,9 +4,9 @@ import mongoosePaginate from "mongoose-paginate";
 let inscritSchema=new mongoose.Schema({
     etat:{
         type: String,
-        enum: ['accepter', 'refuser','en cours de traitement'],
+        enum: ['accepted', 'refused','In progress'],
         required:true,
-        default:'en cours de traitement'
+        default:'In progress'
     },
     date:{type:Date,required:true,default:new Date()},
     idSession:{type:Number,required:true},

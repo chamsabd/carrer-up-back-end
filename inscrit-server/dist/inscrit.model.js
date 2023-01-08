@@ -9,9 +9,9 @@ var mongoose_paginate_1 = __importDefault(require("mongoose-paginate"));
 var inscritSchema = new mongoose_1["default"].Schema({
     etat: {
         type: String,
-        "enum": ['accepter', 'refuser', 'en cours de traitement'],
+        "enum": ['accepted', 'refused', 'In progress'],
         required: true,
-        "default": 'en cours de traitement'
+        "default": 'In progress'
     },
     date: { type: Date, required: true, "default": new Date() },
     idSession: { type: Number, required: true },

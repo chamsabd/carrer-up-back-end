@@ -31,6 +31,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.stereotype.Component;
 
 import com.project.authserver.service.UserService;
 import com.project.authserver.entities.ERole;
@@ -65,25 +66,31 @@ public class SecurityConfig {
 	  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 	 http.csrf().disable() 
 		 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-//	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//		 .authenticationProvider(getProvider())
-//		 .formLogin() 
-//		 .loginProcessingUrl("/signin")
-//		 .successHandler(new AuthentificationLoginSuccessHandler())
-//		 .failureHandler(new SimpleUrlAuthenticationFailureHandler()) 
-//		 .and() 
-//		 .logout()
-//		 .logoutUrl("/logout")
-//		 .logoutSuccessHandler(new AuthentificationLogoutSuccessHandler())
-//		 .invalidateHttpSession(true)
-//		 .and() 
+	    //     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+		//  .authenticationProvider(getProvider())
+		//  .formLogin() 
+		//  .loginProcessingUrl("/signin")
+		
+		//  .failureHandler(new SimpleUrlAuthenticationFailureHandler()) 
+		//  .and() 
+		//  .logout()
+		//  .logoutUrl("/logout")
+		
+		//  .invalidateHttpSession(true)
+		//  .and() 
+		// .formLogin() 
+		//   .loginProcessingUrl("/signin")
+		//   .failureHandler(new MyAuthenticationFailureHandler())
+		//   .and()
 		 .authorizeRequests() 
 		 .antMatchers("/signin").permitAll() 
 		 .antMatchers("/code").permitAll() 
-		 .antMatchers("/signup").permitAll() 
-		 .antMatchers("/logout").permitAll()
+		 .antMatchers("/signup").permitAll()  
+		 .antMatchers("/log").permitAll()
+		// .antMatchers("/user/{email}").permitAll()  
+		 .antMatchers("/changepass").permitAll()  
+		 .antMatchers("/sendcode").permitAll()  
 		 .antMatchers("/api/v1/validateConnection").permitAll()
-        
 		 .antMatchers("/user").hasAuthority("ROLE_ADMIN")
 		 .anyRequest().authenticated();
 	
@@ -127,9 +134,18 @@ public class SecurityConfig {
 	 public PasswordEncoder passwordEncoder () { 
 	 return new BCryptPasswordEncoder(); 
 	 } 
+	 public class MyAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+		@Override
+		public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+			super.onAuthenticationFailure(request, response, exception);
+			request.getSession().setAttribute("error", true);
+		}
+	}
 //	 @Bean
 //	 public AccessDeniedHandler accessDeniedHandler(){ 
 //	 return new AccessDeniedHandlerImpl(); 
 //	 } 
 	 
 	}
+	
+	
