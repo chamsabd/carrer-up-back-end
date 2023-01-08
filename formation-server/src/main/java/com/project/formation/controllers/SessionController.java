@@ -84,7 +84,7 @@ public class SessionController {
 	      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	  }
-	 
+	
 	 
 	 
 	 
@@ -121,6 +121,12 @@ public class SessionController {
 	    } catch (Exception e) {
 	    	   return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 	    }}
-	 
+		@PostMapping("/affecter")
+		public void  affecterFormateur (Session s,Long idF){
+			 this.sessionService.affecterFormateur(s,idF);
+			 this.sessionRepository1.save(s);
+		}
+		
+
 	 
 }
