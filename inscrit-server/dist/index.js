@@ -8,9 +8,7 @@ var express_1 = __importDefault(require("express"));
 var mongoose_1 = __importDefault(require("mongoose"));
 var cors_1 = __importDefault(require("cors"));
 //import nodemailer from 'nodemailer'
-
 var jwt = require('jsonwebtoken');
-
 //8)
 var body_parser_1 = __importDefault(require("body-parser"));
 var axios_1 = __importDefault(require("axios"));
@@ -122,6 +120,7 @@ app.get("/inscrit/:id", function (req, resp) {
 app.post("/inscrit", function (req, resp) {
     var idUser = 1;
     /*let inscrit = new Inscrit(req.body)
+
     inscrit.save(err => {
         if (err) resp.status(500).send(err);
         else {
@@ -141,25 +140,19 @@ app.post("/inscrit", function (req, resp) {
 app.put("/inscrit/accept", function (req, resp) {
     var idInscrip = req.body.id;
     // Send put request here !
-
     var headers = { authorization: req.headers['authorization'] };
-
     inscrit_model_1["default"].findOne({ "_id": idInscrip }, function (err, inscrit) {
         if (err)
             return resp.send("err");
         var idSession = inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idSession;
-
         axios_1["default"].get("".concat(sb_host, "/formation-server/sessions/").concat(idSession), { headers: headers })
-
             .then(function (session) {
             if (session.data == null)
                 return resp.status(404).send({ message: "Session not found" });
             if (session.data.nbrPlace > 0) {
                 var newSession = session.data;
                 newSession.nbrPlace -= 1;
-
                 axios_1["default"].put("".concat(sb_host, "/formation-server/sessions/").concat(idSession), newSession, { headers: headers })
-
                     .then(function (nSession) {
                     inscrit_model_1["default"].findByIdAndUpdate({ "_id": idInscrip }, { "etat": "accepted" }, function (err, inscrit) {
                         if (err)
@@ -171,9 +164,7 @@ app.put("/inscrit/accept", function (req, resp) {
                             subject: 'Votre demande a été accepter',
                             text: "Votre demande a été accepter"
                         };
-
                         axios_1["default"].post("".concat(sb_host, "/email-server/send"), mailData)
-
                             .then(function (res_email) {
                             inscrit.etat = "accepted";
                             resp.status(200).send({ message: "accepted" });
@@ -190,10 +181,8 @@ app.put("/inscrit/accept", function (req, resp) {
             else {
                 return resp.status(404).send({ message: "place not found" });
             }
-
         })["catch"](function (err) {
             console.log("err");
-
         });
     });
 });
@@ -221,9 +210,7 @@ app.put("/inscrit/refuse", function (req, resp) {
                 subject: 'Votre demande a été refusée',
                 text: "Votre demande a été refusée"
             };
-
             axios_1["default"].post("".concat(sb_host, "/email-server/send"), mailData)
-
                 .then(function (res_email) {
                 inscrit.etat = "refused";
                 resp.status(200).send({ message: "refused" });

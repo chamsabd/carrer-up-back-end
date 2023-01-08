@@ -158,6 +158,9 @@ if(v.isEmpty()){
 	Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 				roles.add(userRole);
+				Role userRol = roleRepository.findByName(ERole.ROLE_USER)
+				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(userRol);
 }
 else{
 	Role userRole = roleRepository.findByName(ERole.ROLE_USER)
@@ -228,6 +231,36 @@ headers.setAccessControlAllowOrigin("*");
 				roles.forEach(role -> {
 					if(role == ERole.ROLE_USER.name()) {
 						rolefin=ERole.ROLE_USER.name();
+						in = true;
+					}
+				});
+				
+				
+			}
+			if( usrole.toLowerCase().equals("resp")) {		
+				roles.forEach(role -> {
+					if(role == ERole.ROLE_RESPONSABLE.name()) {
+						rolefin=ERole.ROLE_RESPONSABLE.name();
+						in = true;
+					}
+				});
+				
+				
+			}
+			if( usrole.toLowerCase().equals("form")) {		
+				roles.forEach(role -> {
+					if(role == ERole.ROLE_FORMATUER.name()) {
+						rolefin=ERole.ROLE_FORMATUER.name();
+						in = true;
+					}
+				});
+				
+				
+			}
+			if( usrole.toLowerCase().equals("rh")) {		
+				roles.forEach(role -> {
+					if(role == ERole.ROLE_RH.name()) {
+						rolefin=ERole.ROLE_RH.name();
 						in = true;
 					}
 				});
@@ -306,6 +339,9 @@ headers.setAccessControlAllowOrigin("*");
 		Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
 					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 					roles.add(userRole);
+					Role userRol = roleRepository.findByName(ERole.ROLE_USER)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(userRol);
 	}
 	else{
 		Role userRole = roleRepository.findByName(ERole.ROLE_USER)
