@@ -200,7 +200,7 @@ public class AuthenticationController {
 headers.setAccessControlAllowOrigin("*");
 		
 		
-		URI uri = new URI("http://localhost:8085/email-server/send");
+		//URI uri = new URI("http://localhost:8085/email-server/send");
 		Email email = new Email();
 		email.setTo(signupRequest.getEmail());
 		email.setSubject("verif");
@@ -210,7 +210,7 @@ headers.setAccessControlAllowOrigin("*");
 		HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
 
 		RestTemplate restTemplate = new RestTemplate();
-		String res= restTemplate.postForObject(uri, httpEntity,String.class);
+		//String res= restTemplate.postForObject(uri, httpEntity,String.class);
 			
 			//restTemplate.postForObject("http://localhost:8085/EMAIL-SERVER/code/", String.class, null, null);
 		
@@ -294,17 +294,12 @@ headers.setAccessControlAllowOrigin("*");
 		
 
 	}
-	
-	
 
-
-	
-	
 	
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
-	
+	String code="12345";
 		if (!signupRequest.getCode().equals(code)) {
 			return ResponseEntity
 					.badRequest()

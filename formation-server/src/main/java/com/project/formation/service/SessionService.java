@@ -14,4 +14,6 @@ public interface SessionService {
 	Page<Session> findByNom( String nom, int page,int size);
 	Page<Session> findByFormation(Long f, int page, int size);
 	//ResponseTemplateVO getSessionWithFormation(Long id);
+	void affecterFormateur (Session s,Long idF);
+	void affecterReponsable (Session s,Long idR);
 }
