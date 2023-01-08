@@ -151,47 +151,22 @@ public class AuthenticationController {
 						 
 						 encoder.encode(signupRequest.getPassword()));
 
-	Set<String> strRoles = signupRequest.getRoles();
+	
 	Set<Role> roles = new HashSet<>();
-
-	if (strRoles == null) {
-		Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+List<User> v=userRepository.getAllUsers();
+if(v.isEmpty()){
+	Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-		roles.add(userRole);
-	} else {
-		strRoles.forEach(role -> {
-			switch (role.toLowerCase()) {
-			case "admin":
-				Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(adminRole);
-
-				break;
-			case "resp":
-				Role respRole = roleRepository.findByName(ERole.ROLE_RESPONSABLE)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(respRole);
-
-				break;
-			case "form":
-				Role formRole = roleRepository.findByName(ERole.ROLE_FORMATUER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(formRole);
-
-				break;
-			case "rh":
-				Role rhRole = roleRepository.findByName(ERole.ROLE_RH)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(rhRole);
-
-				break;
-			default:
-				Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 				roles.add(userRole);
-			}
-		});
-	}
+}
+else{
+	Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(userRole);
+}
+	
+			
+	
 
 	user.setRoles(roles);
 	
@@ -269,7 +244,7 @@ headers.setAccessControlAllowOrigin("*");
 		if(in==false) {
 			return ResponseEntity
 					.badRequest()
-					.body(new MessageResponse("Error: you don''t have permission"));
+					.body(new MessageResponse("Error: you don't have permission"));
 		}
 		else {
 		
@@ -333,47 +308,22 @@ headers.setAccessControlAllowOrigin("*");
 						 
 						 encoder.encode(signupRequest.getPassword()));
 
-	Set<String> strRoles = signupRequest.getRoles();
+	
 	Set<Role> roles = new HashSet<>();
 
-	if (strRoles == null) {
-		Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-		roles.add(userRole);
-	} else {
-		strRoles.forEach(role -> {
-			switch (role.toLowerCase()) {
-			case "admin":
-				Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(adminRole);
-
-				break;
-			case "resp":
-				Role respRole = roleRepository.findByName(ERole.ROLE_RESPONSABLE)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(respRole);
-
-				break;
-			case "form":
-				Role formRole = roleRepository.findByName(ERole.ROLE_FORMATUER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(formRole);
-
-				break;
-			case "rh":
-				Role rhRole = roleRepository.findByName(ERole.ROLE_RH)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(rhRole);
-
-				break;
-			default:
-				Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(userRole);
-			}
-		});
+	
+	List<User> v=userRepository.getAllUsers();
+	if(v.isEmpty()){
+		Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(userRole);
 	}
+	else{
+		Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(userRole);
+	}
+		
 
 	user.setRoles(roles);
 	
@@ -386,7 +336,18 @@ headers.setAccessControlAllowOrigin("*");
 	}
 @GetMapping("/user")
 	public ResponseEntity<?> user() {
-		List<User>u=userRepository.findAll();
+		List<User>u=userRepository.getAllUserse();
+		return ResponseEntity.ok(u);
+	}
+
+	@PutMapping("/user")
+	public ResponseEntity<?> addrole(@RequestBody SignupRequest sign) {
+		User u=userRepository.findUserByEmail(sign.getEmail());
+		Set<Role> roles = new HashSet<>();
+		Role r=roleRepository.findByNameS(sign.getRoles()).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+		roles.add(r);
+		u.setRoles(roles);
+		userRepository.save(u);
 		return ResponseEntity.ok(u);
 	}
 
@@ -416,24 +377,34 @@ headers.setAccessControlAllowOrigin("*");
 	}
 
 
-	@PutMapping("/user/{email}")
-	public ResponseEntity<?> changepass(@PathVariable String email,@RequestBody SignupRequest signupRequest) {
-		User u=userRepository.findUserByEmail(email);
+	@PutMapping("/changepass")
+	public ResponseEntity<?> changepass(@RequestBody SignupRequest signupRequest) {
+		User u=userRepository.findUserByEmail(signupRequest.getEmail());
 		if (!signupRequest.getCode().equals(code)) {
 			return ResponseEntity
 					.badRequest()
 					.body(new MessageResponse("Error:code incorrecte!"));
 		}
-		code="-1";
+	
 		u.setPassword(encoder.encode(signupRequest.getPassword()));
 		userRepository.save(u);
-		return ResponseEntity.ok("password changed ");
+		return ResponseEntity.ok(new MessageResponse("password changed "));
 	}
+
 
 	@PostMapping("/sendcode")
 	public ResponseEntity<?> envcodepass(@RequestBody SignupRequest signupRequest) throws URISyntaxException {
-		return	this.passcode("please pass this code to sign up ",signupRequest.getEmail());
+		User u=userRepository.findUserByEmail(signupRequest.getEmail());
+		if (u!=null) {
+			return	this.passcode("please pass this code to change password ",signupRequest.getEmail());
 	
+		} else {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Error:email not found for any user!"));
+			
+		}
+		
 	}
 
 
