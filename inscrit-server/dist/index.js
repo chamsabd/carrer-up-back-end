@@ -8,6 +8,9 @@ var express_1 = __importDefault(require("express"));
 var mongoose_1 = __importDefault(require("mongoose"));
 var cors_1 = __importDefault(require("cors"));
 //import nodemailer from 'nodemailer'
+
+var jwt = require('jsonwebtoken');
+
 //8)
 var body_parser_1 = __importDefault(require("body-parser"));
 var axios_1 = __importDefault(require("axios"));
@@ -28,6 +31,45 @@ var eurekaHelper = require('./eurekaHelper');
 app.listen(PORT, function () {
     console.log("inscrit-service on 3000");
 });
+function validateToken(req, res) {
+    var JWT_HEADER_NAME = "Authorization";
+    var SECRET = "chams-carrer-up@gmail.tn";
+    var EXPIRATION = 10 * 24 * 3600;
+    var HEADER_PREFIX = "Bearer ";
+    var tokenHeaderKey = JWT_HEADER_NAME;
+    var jwtSecretKey = SECRET;
+    try {
+        var tokenb = req.header(tokenHeaderKey);
+        var token = tokenb;
+        //return res.status(200).send(token);
+        if (tokenb.startsWith('Bearer ')) {
+            // Remove Bearer from string
+            token = tokenb.substring(HEADER_PREFIX.length);
+        }
+        var verified = jwt.verify(token, jwtSecretKey);
+        if (verified) {
+            var decode = jwt.decode(token, jwtSecretKey);
+            console.log(decode);
+            if (decode.roles == "ROLE_RESPONSABLE") {
+                var req_url = req.baseUrl + req.route.path;
+                if (req_url.includes("/inscrit") || req.method == "POST") {
+                    return res.status(401).send("Unauthorized!");
+                }
+            }
+            else {
+                return res.status(401).send("Unauthorized!");
+            }
+        }
+        else {
+            // Access Denied
+            return res.status(401).send("non");
+        }
+    }
+    catch (error) {
+        // Access Denied
+        return res.status(401).send(error);
+    }
+}
 eurekaHelper.registerWithEureka('Inscrit-service', PORT);
 //7)
 app.use((0, cors_1["default"])());
@@ -42,6 +84,15 @@ mongoose_1["default"].connect(uri, function (err) {
 });
 //5)
 app.get("/inscrit", function (req, resp) {
+    console.log();
+    var headers = { authorization: req.headers['authorization'] };
+    /* axios.get(`${sb_host}/auth-server/api/v1/validateToken`, { headers: headers})
+        .then((response) => {
+            console.log(response.data)
+        })
+        .catch((err)=>{
+            console.log(err)
+        }) */
     inscrit_model_1["default"].find(function (err, inscrit) {
         if (err)
             resp.status(500).send(err);
@@ -69,31 +120,46 @@ app.get("/inscrit/:id", function (req, resp) {
 });
 //6)
 app.post("/inscrit", function (req, resp) {
-    var inscrit = new inscrit_model_1["default"](req.body);
-    inscrit.save(function (err) {
+    var idUser = 1;
+    /*let inscrit = new Inscrit(req.body)
+    inscrit.save(err => {
+        if (err) resp.status(500).send(err);
+        else {
+            console.log(inscrit?.toObject().idSession);
+            resp.send(inscrit)
+        }
+    });*/
+    inscrit_model_1["default"].create({ idSession: req.body.idSession, idUser: idUser })
+        .then(function (inscrit) {
+        console.log(inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idSession);
+        resp.send(inscrit);
+    })["catch"](function (err) {
         if (err)
             resp.status(500).send(err);
-        else {
-            console.log(inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idSession);
-            resp.send(inscrit);
-        }
     });
 });
 app.put("/inscrit/accept", function (req, resp) {
     var idInscrip = req.body.id;
     // Send put request here !
+
+    var headers = { authorization: req.headers['authorization'] };
+
     inscrit_model_1["default"].findOne({ "_id": idInscrip }, function (err, inscrit) {
         if (err)
             return resp.send("err");
         var idSession = inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idSession;
-        axios_1["default"].get("".concat(sb_host, "/formation-server/sessions/").concat(idSession))
+
+        axios_1["default"].get("".concat(sb_host, "/formation-server/sessions/").concat(idSession), { headers: headers })
+
             .then(function (session) {
             if (session.data == null)
                 return resp.status(404).send({ message: "Session not found" });
             if (session.data.nbrPlace > 0) {
                 var newSession = session.data;
                 newSession.nbrPlace -= 1;
-                axios_1["default"].put("".concat(sb_host, "/formation-server/sessions/").concat(idSession), newSession)
+
+                axios_1["default"].put("".concat(sb_host, "/formation-server/sessions/").concat(idSession), newSession, { headers: headers })
+
                     .then(function (nSession) {
                     inscrit_model_1["default"].findByIdAndUpdate({ "_id": idInscrip }, { "etat": "accepted" }, function (err, inscrit) {
                         if (err)
@@ -105,7 +171,9 @@ app.put("/inscrit/accept", function (req, resp) {
                             subject: 'Votre demande a été accepter',
                             text: "Votre demande a été accepter"
                         };
-                        axios_1["default"].post("".concat(sb_host, "/EMAIL-SERVER/send"), mailData)
+
+                        axios_1["default"].post("".concat(sb_host, "/email-server/send"), mailData)
+
                             .then(function (res_email) {
                             inscrit.etat = "accepted";
                             resp.status(200).send({ message: "accepted" });
@@ -122,11 +190,17 @@ app.put("/inscrit/accept", function (req, resp) {
             else {
                 return resp.status(404).send({ message: "place not found" });
             }
+
+        })["catch"](function (err) {
+            console.log("err");
+
         });
     });
 });
 /*let idFormation = session.data.formation_id
+
              axios.get(`${sb_host}/formation-server/formations/${idFormation}`)
+
                  .then((formation)=>{
                      console.log(formation.data)
                      resp.send(formation.data)
@@ -147,7 +221,9 @@ app.put("/inscrit/refuse", function (req, resp) {
                 subject: 'Votre demande a été refusée',
                 text: "Votre demande a été refusée"
             };
-            axios_1["default"].post("".concat(sb_host, "/EMAIL-SERVER/send"), mailData)
+
+            axios_1["default"].post("".concat(sb_host, "/email-server/send"), mailData)
+
                 .then(function (res_email) {
                 inscrit.etat = "refused";
                 resp.status(200).send({ message: "refused" });

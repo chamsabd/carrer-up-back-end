@@ -24,7 +24,7 @@ public class SignupRequest {
 	
 
     
-    private Set<String> roles;
+    private String roles;
     
     @NotBlank
     @Size(min = 6, max = 40)
@@ -72,7 +72,7 @@ public class SignupRequest {
 		this.prenom = prenom;
 	}
 
-	public void setRoles(Set<String> roles) {
+	public void setRoles(String roles) {
 		this.roles = roles;
 	}
 
@@ -92,11 +92,11 @@ public class SignupRequest {
         this.password = password;
     }
     
-    public Set<String> getRoles() {
+    public String getRoles() {
       return this.roles;
     }
     
-    public void setRole(Set<String> roles) {
+    public void setRole(String roles) {
       this.roles = roles;
     }
 }
