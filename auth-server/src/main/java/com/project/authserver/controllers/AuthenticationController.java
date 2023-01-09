@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.hibernate.validator.internal.util.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,6 +44,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.mongodb.diagnostics.logging.Logger;
 import com.project.authserver.entities.ERole;
 import com.project.authserver.entities.Email;
 import com.project.authserver.entities.Role;
@@ -364,13 +366,44 @@ headers.setAccessControlAllowOrigin("*");
 		List<User>u=userRepository.getAllUserse();
 		return ResponseEntity.ok(u);
 	}
-
 	@PutMapping("/user")
 	public ResponseEntity<?> addrole(@RequestBody SignupRequest sign) {
 		User u=userRepository.findUserByEmail(sign.getEmail());
 		Set<Role> roles = new HashSet<>();
-		Role r=roleRepository.findByNameS(sign.getRoles()).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-		roles.add(r);
+		//return ResponseEntity.ok(u.getRoles().isEmpty());
+		if (u.getRoles().isEmpty()==false) {
+			for (String role : sign.getRoles()) {
+				Role r=roleRepository.findByNameS(role).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				Boolean in=false;
+			//	return ResponseEntity.ok(r.getName()+" "+u.getRoles().contains(r));
+
+				for (Role role2 : u.getRoles()) {
+					if (role2.getName().toString().equals(roles)) {
+						in=true;
+					}
+
+				}
+					if (in) {
+					roles.add(r);
+				}
+				
+				
+					
+				}
+		} else {
+			for (String role : sign.getRoles()) {
+				Role r=roleRepository.findByNameS(role).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					//return ResponseEntity.ok(!role2.getName().toString().equals(role));		
+					roles.add(r);
+
+				}
+			
+		}
+
+		
+	
+
+		
 		u.setRoles(roles);
 		userRepository.save(u);
 		return ResponseEntity.ok(u);

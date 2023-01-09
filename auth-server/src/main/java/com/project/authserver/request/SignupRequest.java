@@ -4,6 +4,8 @@ package com.project.authserver.request;
 import java.util.Set;
 
 import javax.validation.constraints.*;
+
+import com.project.authserver.entities.Role;
  
 public class SignupRequest {
     @NotBlank
@@ -24,7 +26,7 @@ public class SignupRequest {
 	
 
     
-    private String roles;
+    private Set<String> roles;
     
     @NotBlank
     @Size(min = 6, max = 40)
@@ -72,8 +74,9 @@ public class SignupRequest {
 		this.prenom = prenom;
 	}
 
-	public void setRoles(String roles) {
-		this.roles = roles;
+	public void setRoles(Set<String> roles) {
+		this.roles=roles;
+       // this.roles.addAll();
 	}
 
 	public String getEmail() {
@@ -92,11 +95,9 @@ public class SignupRequest {
         this.password = password;
     }
     
-    public String getRoles() {
+    public Set<String> getRoles() {
       return this.roles;
     }
     
-    public void setRole(String roles) {
-      this.roles = roles;
-    }
+    
 }
