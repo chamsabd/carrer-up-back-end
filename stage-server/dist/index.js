@@ -87,12 +87,12 @@ function validateToken(req, res) {
                     res.status(401).send("Unauthorized!");
                 }
             }
-            else if (decode.roles != "ROLE_USER") {
-                var req_url = req.baseUrl + req.route.path;
-                if (req_url.includes("/file/upload/:id")) {
-                    res.status(401).send("Unauthorized!");
-                }
-            }
+            //    else if (decode.roles !="ROLE_USER") {
+            //     let req_url = req.baseUrl+req.route.path;
+            //     if(req_url.includes("/file/upload/:id")){
+            //          res.status(401).send("Unauthorized!");
+            //     }
+            //     }
         }
         else {
             // Access Denied

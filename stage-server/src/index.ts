@@ -52,8 +52,7 @@ app.post('/file/upload/:id', function(req:any,res:any,next){
             req.params["id"],
             {
         
-                $push: {"cv":{"path":filepath,"name":req.file.originalname,"size":req.file.size,"registername":req.file.filename}},
-                
+                $push:{"cv":{"path":filepath,"name":req.file.originalname,"size":req.file.size,"registername":req.file.filename}},   
             }, {new:true} ,(err:any)=>{
                 if (err) res.status(500).send(err)
                     
@@ -112,13 +111,13 @@ app.post('/file/download', function(req,res,next){
              res.status(401).send("Unauthorized!");
         }
     }
-   else if (decode.roles !="ROLE_USER") {
-    let req_url = req.baseUrl+req.route.path;
-    if(req_url.includes("/file/upload/:id")){
-         res.status(401).send("Unauthorized!");
-    }
+//    else if (decode.roles !="ROLE_USER") {
+//     let req_url = req.baseUrl+req.route.path;
+//     if(req_url.includes("/file/upload/:id")){
+//          res.status(401).send("Unauthorized!");
+//     }
      
-    }
+//     }
         }else{
             // Access Denied
              res.status(401).send("Unauthorized!");
