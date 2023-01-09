@@ -2,7 +2,7 @@ import  express,{Request,response,Response}  from "express";
 import mongoose from "mongoose";
 import Stage from "./stage.model";
 import bodyParser from "body-parser"
-import { validateHeaderName } from "http";
+
 const jwt = require('jsonwebtoken');
 var multer = require('multer');
 var path = require('path');
@@ -42,7 +42,7 @@ app.post('/file/upload/:id', function(req:any,res:any,next){
     
     var id=req.params["id"];
     
-    res.setHeader("Access-Control-Allow-Origin","*")
+   
     upload(req,res,function(err:any){
         if(err){
             return res.status(501).json({error:err});
@@ -52,8 +52,7 @@ app.post('/file/upload/:id', function(req:any,res:any,next){
             req.params["id"],
             {
         
-                $push: {"cv":{"path":filepath,"name":req.file.originalname,"size":req.file.size,"registername":req.file.filename}},
-                
+                $push:{"cv":{"path":filepath,"name":req.file.originalname,"size":req.file.size,"registername":req.file.filename}},   
             }, {new:true} ,(err:any)=>{
                 if (err) res.status(500).send(err)
                     
@@ -64,15 +63,14 @@ console.log(stage);
         
         
         //do all database record saving activity
-        res.setHeader("Access-Control-Allow-Origin","*")
+        
         return res.json({originalname:req.file.originalname, uploadname:req.file.filename});
     });
 });
 
 app.post('/file/download', function(req,res,next){
     validateToken(req,res);
-    res.setHeader("Access-Control-Allow-Origin","*")
-   var filepath = path.join(__dirname,'../uploads') +'/'+ req.body.filename;
+     var filepath = path.join(__dirname,'../uploads') +'/'+ req.body.filename;
   //  res.sendFile(filepath);
     var o=req.body.filename
    
@@ -86,7 +84,6 @@ app.post('/file/download', function(req,res,next){
   function  validateToken(req:any, res:any){
     var JWT_HEADER_NAME="Authorization";
 	 var SECRET="chams-carrer-up@gmail.tn"; 
-
 	 var HEADER_PREFIX="Bearer "; 
     let tokenHeaderKey = JWT_HEADER_NAME;
     let jwtSecretKey = SECRET;
@@ -107,27 +104,27 @@ app.post('/file/download', function(req,res,next){
        if( decode.roles !="ROLE_RH" ){
         let req_url = req.baseUrl+req.route.path;
       
-        if(req_url.includes("stages/:id") && (req.method=="POST" || req.method=="PUT") ){
-            return res.status(401).send("Unauthorized!");
+        if(req.method=="POST" || req.method=="PUT"  ){
+             res.status(401).send("Unauthorized!");
         }
         else if(req_url.includes("/file/download")){
-            return res.status(401).send("Unauthorized!");
+             res.status(401).send("Unauthorized!");
         }
     }
-   else if (decode.roles !="ROLE_USER") {
-    let req_url = req.baseUrl+req.route.path;
-    if(req_url.includes("/file/upload/:id")){
-        return res.status(401).send("Unauthorized!");
-    }
-    return res.status(401).send("Unauthorized!");
-    }
+//    else if (decode.roles !="ROLE_USER") {
+//     let req_url = req.baseUrl+req.route.path;
+//     if(req_url.includes("/file/upload/:id")){
+//          res.status(401).send("Unauthorized!");
+//     }
+     
+//     }
         }else{
             // Access Denied
-            return res.status(401).send("non");
+             res.status(401).send("Unauthorized!");
         }
     } catch (error) {
         // Access Denied
-        return res.status(401).send(error);
+         res.status(401).send(error);
     }
      }
 

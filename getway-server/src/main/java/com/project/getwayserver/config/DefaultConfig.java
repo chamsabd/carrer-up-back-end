@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class DefaultConfig {
 
 	//@Value("${spring.gateway.excludedURLsNew}")
-    private String urlsStrings="/api/v1/validateToken,/signin,/code,/signup,/send,/logout";
+    private String urlsStrings="/api/v1/validateToken,/signin,/code,/signup,/send,/logout,/changepass,/sendcode";
 
     @Bean
     @Qualifier("excludedUrls")

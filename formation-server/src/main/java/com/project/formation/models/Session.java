@@ -39,7 +39,7 @@ Date dateFin;
 int nbrPlace;
 	
 	Long idReponsable;
-	
+	Long idFormateur;
 	Long formation_id;
 	
 	
@@ -72,7 +72,7 @@ int nbrPlace;
 
 	
 	public Session(String nom, @FutureOrPresent Date dateDebut, @Future Date dateFin, @Max(20) int nbrPlace,
-			Long idReponsable, Long formation_id) {
+			Long idReponsable, Long formation_id, Long idFormateur) {
 		super();
 		this.nom = nom;
 		this.dateDebut = dateDebut;
@@ -80,16 +80,18 @@ int nbrPlace;
 		this.nbrPlace = nbrPlace;
 		this.idReponsable = idReponsable;
 		this.formation_id = formation_id;
+		this.idFormateur=idFormateur;
 	}
 
 	public Session(String nom, @FutureOrPresent Date dateDebut, @Future Date dateFin, @Max(20) int nbrPlace,
-			Long idReponsable) {
+			Long idReponsable,Long idFormateur) {
 		super();
 		this.nom = nom;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.nbrPlace = nbrPlace;
-		this.idReponsable = idReponsable;
+		this.idReponsable = idReponsable;;
+		this.idFormateur=idFormateur;
 	}
 
 	public Date getDateDebut() {
@@ -136,5 +138,11 @@ int nbrPlace;
 		this.nom = nom;
 	}
 	
+	public Long getIdFormateur() {
+		return idFormateur;
+	}
+	public void setIdFormateur(Long idFormateur) {
+		this.idFormateur = idFormateur;
+	}
 	
 }

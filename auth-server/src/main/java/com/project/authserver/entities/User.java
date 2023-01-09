@@ -76,7 +76,7 @@ public class User implements Serializable, UserDetails {
 public User(String id, @NotBlank String username, @NotBlank @Size(max = 20) String nom,
 		@NotBlank @Size(max = 20) String prenom, @NotBlank @Size(max = 50) @Email String email,
 		@NotBlank @Size(max = 120) String password, Set<Role> roles) {
-	super();
+	
 	this.id = id;
 	this.username = username;
 	this.nom = nom;
@@ -142,7 +142,7 @@ public String getId() {
   }
 
   public void setRoles(Set<Role> roles) {
-    this.roles = roles;
+    this.roles.addAll(roles);
   }
 
 @Override

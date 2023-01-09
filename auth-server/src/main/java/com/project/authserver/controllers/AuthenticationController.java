@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.hibernate.validator.internal.util.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,6 +44,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.mongodb.diagnostics.logging.Logger;
 import com.project.authserver.entities.ERole;
 import com.project.authserver.entities.Email;
 import com.project.authserver.entities.Role;
@@ -151,47 +153,25 @@ public class AuthenticationController {
 						 
 						 encoder.encode(signupRequest.getPassword()));
 
-	Set<String> strRoles = signupRequest.getRoles();
+	
 	Set<Role> roles = new HashSet<>();
-
-	if (strRoles == null) {
-		Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+List<User> v=userRepository.getAllUsers();
+if(v.isEmpty()){
+	Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-		roles.add(userRole);
-	} else {
-		strRoles.forEach(role -> {
-			switch (role.toLowerCase()) {
-			case "admin":
-				Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(adminRole);
-
-				break;
-			case "resp":
-				Role respRole = roleRepository.findByName(ERole.ROLE_RESPONSABLE)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(respRole);
-
-				break;
-			case "form":
-				Role formRole = roleRepository.findByName(ERole.ROLE_FORMATUER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(formRole);
-
-				break;
-			case "rh":
-				Role rhRole = roleRepository.findByName(ERole.ROLE_RH)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(rhRole);
-
-				break;
-			default:
-				Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 				roles.add(userRole);
-			}
-		});
-	}
+				Role userRol = roleRepository.findByName(ERole.ROLE_USER)
+				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(userRol);
+}
+else{
+	Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				roles.add(userRole);
+}
+	
+			
+	
 
 	user.setRoles(roles);
 	
@@ -201,21 +181,14 @@ public class AuthenticationController {
 headers.setAccessControlAllowOrigin("*");
 		
 		
-		// URI uri = new URI("http://localhost:8085/email-server/send");
-		// Email email = new Email();
-		// email.setTo(signupRequest.getEmail());
-		// email.setSubject("verif");
-		// email.setText("please pass this code to sign up  "+code);
+
 	return	this.passcode("please pass this code to sign up ",signupRequest.getEmail());
+
 
 		// HttpEntity<Email> httpEntity = new HttpEntity<>(email, headers);
 
-		// RestTemplate restTemplate = new RestTemplate();
-		// String res= restTemplate.postForObject(uri, httpEntity,String.class);
-			
-			//restTemplate.postForObject("http://localhost:8085/EMAIL-SERVER/code/", String.class, null, null);
-		
-		// return ResponseEntity.ok(new MessageResponse(code));
+
+	
 		
 		
 	}
@@ -266,10 +239,40 @@ headers.setAccessControlAllowOrigin("*");
 				
 				
 			}
+			if( usrole.toLowerCase().equals("resp")) {		
+				roles.forEach(role -> {
+					if(role == ERole.ROLE_RESPONSABLE.name()) {
+						rolefin=ERole.ROLE_RESPONSABLE.name();
+						in = true;
+					}
+				});
+				
+				
+			}
+			if( usrole.toLowerCase().equals("form")) {		
+				roles.forEach(role -> {
+					if(role == ERole.ROLE_FORMATUER.name()) {
+						rolefin=ERole.ROLE_FORMATUER.name();
+						in = true;
+					}
+				});
+				
+				
+			}
+			if( usrole.toLowerCase().equals("rh")) {		
+				roles.forEach(role -> {
+					if(role == ERole.ROLE_RH.name()) {
+						rolefin=ERole.ROLE_RH.name();
+						in = true;
+					}
+				});
+				
+				
+			}
 		if(in==false) {
 			return ResponseEntity
 					.badRequest()
-					.body(new MessageResponse("Error: you don''t have permission"));
+					.body(new MessageResponse("Error: you don't have permission"));
 		}
 		else {
 		
@@ -295,11 +298,7 @@ headers.setAccessControlAllowOrigin("*");
 		
 
 	}
-	
-	
 
-	
-	
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
@@ -333,47 +332,25 @@ headers.setAccessControlAllowOrigin("*");
 						 
 						 encoder.encode(signupRequest.getPassword()));
 
-	Set<String> strRoles = signupRequest.getRoles();
+	
 	Set<Role> roles = new HashSet<>();
 
-	if (strRoles == null) {
-		Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-		roles.add(userRole);
-	} else {
-		strRoles.forEach(role -> {
-			switch (role.toLowerCase()) {
-			case "admin":
-				Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(adminRole);
-
-				break;
-			case "resp":
-				Role respRole = roleRepository.findByName(ERole.ROLE_RESPONSABLE)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(respRole);
-
-				break;
-			case "form":
-				Role formRole = roleRepository.findByName(ERole.ROLE_FORMATUER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(formRole);
-
-				break;
-			case "rh":
-				Role rhRole = roleRepository.findByName(ERole.ROLE_RH)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(rhRole);
-
-				break;
-			default:
-				Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				roles.add(userRole);
-			}
-		});
+	
+	List<User> v=userRepository.getAllUsers();
+	if(v.isEmpty()){
+		Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(userRole);
+					Role userRol = roleRepository.findByName(ERole.ROLE_USER)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(userRol);
 	}
+	else{
+		Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(userRole);
+	}
+		
 
 	user.setRoles(roles);
 	
@@ -386,7 +363,49 @@ headers.setAccessControlAllowOrigin("*");
 	}
 @GetMapping("/user")
 	public ResponseEntity<?> user() {
-		List<User>u=userRepository.findAll();
+		List<User>u=userRepository.getAllUserse();
+		return ResponseEntity.ok(u);
+	}
+	@PutMapping("/user")
+	public ResponseEntity<?> addrole(@RequestBody SignupRequest sign) {
+		User u=userRepository.findUserByEmail(sign.getEmail());
+		Set<Role> roles = new HashSet<>();
+		//return ResponseEntity.ok(u.getRoles().isEmpty());
+		if (u.getRoles().isEmpty()==false) {
+			for (String role : sign.getRoles()) {
+				Role r=roleRepository.findByNameS(role).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+				Boolean in=false;
+			//	return ResponseEntity.ok(r.getName()+" "+u.getRoles().contains(r));
+
+				for (Role role2 : u.getRoles()) {
+					if (role2.getName().toString().equals(roles)) {
+						in=true;
+					}
+
+				}
+					if (in) {
+					roles.add(r);
+				}
+				
+				
+					
+				}
+		} else {
+			for (String role : sign.getRoles()) {
+				Role r=roleRepository.findByNameS(role).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					//return ResponseEntity.ok(!role2.getName().toString().equals(role));		
+					roles.add(r);
+
+				}
+			
+		}
+
+		
+	
+
+		
+		u.setRoles(roles);
+		userRepository.save(u);
 		return ResponseEntity.ok(u);
 	}
 
@@ -416,24 +435,34 @@ headers.setAccessControlAllowOrigin("*");
 	}
 
 
-	@PutMapping("/user/{email}")
-	public ResponseEntity<?> changepass(@PathVariable String email,@RequestBody SignupRequest signupRequest) {
-		User u=userRepository.findUserByEmail(email);
+	@PutMapping("/changepass")
+	public ResponseEntity<?> changepass(@RequestBody SignupRequest signupRequest) {
+		User u=userRepository.findUserByEmail(signupRequest.getEmail());
 		if (!signupRequest.getCode().equals(code)) {
 			return ResponseEntity
 					.badRequest()
 					.body(new MessageResponse("Error:code incorrecte!"));
 		}
-		code="-1";
+	
 		u.setPassword(encoder.encode(signupRequest.getPassword()));
 		userRepository.save(u);
-		return ResponseEntity.ok("password changed ");
+		return ResponseEntity.ok(new MessageResponse("password changed "));
 	}
+
 
 	@PostMapping("/sendcode")
 	public ResponseEntity<?> envcodepass(@RequestBody SignupRequest signupRequest) throws URISyntaxException {
-		return	this.passcode("please pass this code to sign up ",signupRequest.getEmail());
+		User u=userRepository.findUserByEmail(signupRequest.getEmail());
+		if (u!=null) {
+			return	this.passcode("please pass this code to change password ",signupRequest.getEmail());
 	
+		} else {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Error:email not found for any user!"));
+			
+		}
+		
 	}
 
 
@@ -457,10 +486,11 @@ headers.setAccessControlAllowOrigin("*");
    @GetMapping(value = "/api/v1/validateToken", produces = {MediaType.APPLICATION_JSON_VALUE})
    public ResponseEntity<ConnValidationResponse> validateGet(HttpServletRequest request) {
        String username = (String) request.getAttribute("username");
+	   String id = (String) request.getAttribute("id");
        String token = (String) request.getAttribute("jwt");
        List<GrantedAuthority> grantedAuthorities = (List<GrantedAuthority>) request.getAttribute("authorities");
        return ResponseEntity.ok(
-       		new ConnValidationResponse("ok",HttpMethod.GET.name(),username,token,grantedAuthorities));
+       		new ConnValidationResponse("ok",HttpMethod.GET.name(),id,token,grantedAuthorities));
        		
        		
    }

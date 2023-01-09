@@ -47,6 +47,23 @@ public class SessionServiceImp  implements SessionService{
 		        return this.sessionRepository.findById(id).orElse(null);
 		    }
 		
+			
+			@Override
+			public void affecterFormateur(Session s, Long idF) {
+				// TODO Auto-generated method stub
+				Long id=s.getIdFormateur();
+				if (id!=idF){
+					s.setIdFormateur(idF);
+				}
+			}
+			@Override
+			public void affecterReponsable(Session s, Long idR) {
+				Long id=s.getIdReponsable();
+				if (id!=idR){
+					s.setIdReponsable(idR);
+				}
+				
+			}
 
 	
 }
