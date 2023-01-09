@@ -51,6 +51,10 @@ public class User implements Serializable, UserDetails {
   @Size(max = 120)
   private String password;
 
+  private String societe;
+
+
+
   @DBRef
   private Set<Role> roles = new HashSet<>();
   public User() {
@@ -64,6 +68,7 @@ public class User implements Serializable, UserDetails {
     this.email = email;
     this.password = password;
   }
+
 	
   public User(@NotBlank @Size(max = 20) String username, @NotBlank @Size(max = 120) String password, Set<Role> roles) {
 	super();
@@ -88,6 +93,15 @@ public User(String id, @NotBlank String username, @NotBlank @Size(max = 20) Stri
 
 public String getNom() {
 	return nom;
+}
+
+
+public String getSociete() {
+  return societe;
+}
+
+public void setSociete(String societe) {
+  this.societe = societe;
 }
 
 public void setNom(String nom) {

@@ -53,6 +53,7 @@ app.post('/file/upload/:id', function (req, res, next) {
         return res.json({ originalname: req.file.originalname, uploadname: req.file.filename });
     });
 });
+var username = "";
 app.post('/file/download', function (req, res, next) {
     validateToken(req, res);
     var filepath = path.join(__dirname, '../uploads') + '/' + req.body.filename;
@@ -61,6 +62,8 @@ app.post('/file/download', function (req, res, next) {
     var arr = o.substring(o.indexOf('.') + 1);
     res.download(filepath, arr, null);
 });
+var societe = "";
+var role = "";
 function validateToken(req, res) {
     var JWT_HEADER_NAME = "Authorization";
     var SECRET = "chams-carrer-up@gmail.tn";
@@ -78,21 +81,26 @@ function validateToken(req, res) {
         var verified = jwt.verify(token, jwtSecretKey);
         if (verified) {
             var decode = jwt.decode(token, jwtSecretKey);
+            console.log(decode);
+            username = decode.sub;
+            societe = decode.societe;
+            role = decode.roles;
+            console.log(societe);
             if (decode.roles != "ROLE_RH") {
                 var req_url = req.baseUrl + req.route.path;
-                if (req.method == "POST" || req.method == "PUT") {
+                if ((req.method == "POST" || req.method == "PUT")) {
                     res.status(401).send("Unauthorized!");
                 }
                 else if (req_url.includes("/file/download")) {
                     res.status(401).send("Unauthorized!");
                 }
             }
-            //    else if (decode.roles !="ROLE_USER") {
-            //     let req_url = req.baseUrl+req.route.path;
-            //     if(req_url.includes("/file/upload/:id")){
-            //          res.status(401).send("Unauthorized!");
-            //     }
-            //     }
+            else if (decode.roles != "ROLE_USER") {
+                var req_url = req.baseUrl + req.route.path;
+                if (req_url.includes("/file/upload/:id")) {
+                    res.status(401).send("Unauthorized!");
+                }
+            }
         }
         else {
             // Access Denied
@@ -106,17 +114,29 @@ function validateToken(req, res) {
 }
 app.post("/stages", function (req, res) {
     validateToken(req, res);
-    console.log("stage " + req.body.societe);
-    var stage = new stage_model_1["default"](req.body);
-    stage.save(function (err) {
+    req.body.societe = societe;
+    // console.log("stage "+req.body.societe);
+    stage_model_1["default"].aggregate([
+        { "$match": { "sujet": req.body.sujet } },
+    ], function (err, data) {
         if (err)
-            res.status(500).send(err);
+            throw err;
+        if (data.length == 0) {
+            var stage_1 = new stage_model_1["default"](req.body);
+            stage_1.save(function (err) {
+                if (err)
+                    res.status(500).send(err);
+                else
+                    res.send(stage_1);
+            });
+        }
         else
-            res.send(stage);
+            res.status(500).send("subject alradey used");
     });
 });
 app.put("/stages/:id", function (req, res) {
     validateToken(req, res);
+    req.body.societe = societe;
     var stage = stage_model_1["default"].findByIdAndUpdate(req.params.id, req.body, function (err) {
         if (err)
             res.status(500).send(err);
@@ -127,14 +147,25 @@ app.put("/stages/:id", function (req, res) {
 app.get("/stages", function (req, res) {
     // res.send("<h1> Test Express avec type script<\h1>")
     validateToken(req, res);
-    stage_model_1["default"].find(function (err, stages) {
-        if (err) {
-            res.status(500).send(err);
-        }
-        else {
-            res.send(stages);
-        }
-    });
+    if (role == "ROLE_RH") {
+        stage_model_1["default"].aggregate([
+            { "$match": { "societe": societe } },
+        ], function (err, data) {
+            if (err)
+                throw err;
+            res.send(data);
+        });
+    }
+    else {
+        stage_model_1["default"].find(function (err, stages) {
+            if (err) {
+                res.status(500).send(err);
+            }
+            else {
+                res.send(stages);
+            }
+        });
+    }
 });
 app.get("/stages/:id", function (req, res) {
     validateToken(req, res);

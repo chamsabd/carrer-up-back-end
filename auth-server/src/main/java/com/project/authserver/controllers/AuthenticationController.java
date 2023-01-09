@@ -280,7 +280,8 @@ headers.setAccessControlAllowOrigin("*");
 		      String jwt= JWT.create() 
 				.withIssuer(request.getRequestURI())   
 				.withSubject(userDetails.getUsername())         
-				.withClaim("roles",rolefin)    
+				.withClaim("roles",rolefin)  
+				.withClaim("societe",us.getSociete())    
 				.withExpiresAt(new Date(System.currentTimeMillis()+SecurityParam.EXPIRATION))
 				.sign(Algorithm.HMAC256(SecurityParam.SECRET));
 		      System.out.println(userDetails.getEmail());
@@ -291,8 +292,10 @@ headers.setAccessControlAllowOrigin("*");
 	 
 		return ResponseEntity.ok(new JwtResponse(jwt, 
 		us.getId(), 
-				 userDetails.getUsername(), 
+				 userDetails.getUsername(),
+				 us.getSociete(), 
 				 us.getEmail(), 
+				
 				 rolefin));
 		}
 		
@@ -372,24 +375,12 @@ headers.setAccessControlAllowOrigin("*");
 		Set<Role> roles = new HashSet<>();
 		//return ResponseEntity.ok(u.getRoles().isEmpty());
 		if (u.getRoles().isEmpty()==false) {
+			u.getRoles().clear();
 			for (String role : sign.getRoles()) {
 				Role r=roleRepository.findByNameS(role).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-				Boolean in=false;
-			//	return ResponseEntity.ok(r.getName()+" "+u.getRoles().contains(r));
-
-				for (Role role2 : u.getRoles()) {
-					if (role2.getName().toString().equals(roles)) {
-						in=true;
-					}
-
-				}
-					if (in) {
-					roles.add(r);
-				}
-				
-				
-					
-				}
+				roles.add(r);
+			}
+		
 		} else {
 			for (String role : sign.getRoles()) {
 				Role r=roleRepository.findByNameS(role).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -405,6 +396,8 @@ headers.setAccessControlAllowOrigin("*");
 
 		
 		u.setRoles(roles);
+		if(!sign.getSociete().isEmpty())
+		u.setSociete(sign.getSociete());
 		userRepository.save(u);
 		return ResponseEntity.ok(u);
 	}

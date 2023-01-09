@@ -9,7 +9,6 @@ var mongoose_1 = __importDefault(require("mongoose"));
 var cors_1 = __importDefault(require("cors"));
 //import nodemailer from 'nodemailer'
 var jwt = require('jsonwebtoken');
-//8)
 var body_parser_1 = __importDefault(require("body-parser"));
 var axios_1 = __importDefault(require("axios"));
 var inscrit_model_1 = __importDefault(require("./inscrit.model"));
@@ -69,7 +68,6 @@ function validateToken(req, res) {
     }
 }
 eurekaHelper.registerWithEureka('Inscrit-service', PORT);
-//7)
 app.use((0, cors_1["default"])());
 app.use(body_parser_1["default"].json());
 //4)
@@ -116,19 +114,8 @@ app.get("/inscrit/:id", function (req, resp) {
             resp.send(inscrit);
     });
 });
-//6)
 app.post("/inscrit", function (req, resp) {
-    var idUser = 1;
-    /*let inscrit = new Inscrit(req.body)
-
-    inscrit.save(err => {
-        if (err) resp.status(500).send(err);
-        else {
-            console.log(inscrit?.toObject().idSession);
-            resp.send(inscrit)
-        }
-    });*/
-    inscrit_model_1["default"].create({ idSession: req.body.idSession, idUser: idUser })
+    inscrit_model_1["default"].create({ idSession: req.body.idSession, idUser: req.body.idSession })
         .then(function (inscrit) {
         console.log(inscrit === null || inscrit === void 0 ? void 0 : inscrit.toObject().idSession);
         resp.send(inscrit);

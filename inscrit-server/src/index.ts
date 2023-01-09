@@ -6,7 +6,7 @@ import cors from 'cors'
 
 
 const jwt = require('jsonwebtoken');
-//8)
+
 import bodyParser from "body-parser";
 import axios from 'axios';
 
@@ -71,7 +71,7 @@ function  validateToken(req:any, res:any){
 
 
 eurekaHelper.registerWithEureka('Inscrit-service', PORT);
-//7)
+
 app.use(cors())
 app.use(bodyParser.json())
 //4)
@@ -119,22 +119,11 @@ app.get("/inscrit/:id", (req: Request, resp: Response) => {
     });
 });
 
-//6)
+
 app.post("/inscrit", (req: Request, resp: Response) => {
 
-   
-    let idUser = 1
-
-    /*let inscrit = new Inscrit(req.body)
-
-    inscrit.save(err => {
-        if (err) resp.status(500).send(err);
-        else {
-            console.log(inscrit?.toObject().idSession);
-            resp.send(inscrit)
-        }
-    });*/
-    Inscrit.create({idSession: req.body.idSession, idUser: idUser})
+  
+    Inscrit.create({idSession: req.body.idSession, idUser: req.body.idSession})
         .then((inscrit)=>{
             console.log(inscrit?.toObject().idSession);
             resp.send(inscrit)

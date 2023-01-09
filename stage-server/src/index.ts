@@ -52,7 +52,8 @@ app.post('/file/upload/:id', function(req:any,res:any,next){
             req.params["id"],
             {
         
-                $push:{"cv":{"path":filepath,"name":req.file.originalname,"size":req.file.size,"registername":req.file.filename}},   
+                $push: {"cv":{"path":filepath,"name":req.file.originalname,"size":req.file.size,"registername":req.file.filename}},
+                
             }, {new:true} ,(err:any)=>{
                 if (err) res.status(500).send(err)
                     
@@ -67,7 +68,7 @@ console.log(stage);
         return res.json({originalname:req.file.originalname, uploadname:req.file.filename});
     });
 });
-
+var username=""
 app.post('/file/download', function(req,res,next){
     validateToken(req,res);
      var filepath = path.join(__dirname,'../uploads') +'/'+ req.body.filename;
@@ -80,10 +81,12 @@ app.post('/file/download', function(req,res,next){
  res.download(filepath,arr,null);
 });
 
-
+var societe:String="";
+var role:String="";
   function  validateToken(req:any, res:any){
     var JWT_HEADER_NAME="Authorization";
 	 var SECRET="chams-carrer-up@gmail.tn"; 
+
 	 var HEADER_PREFIX="Bearer "; 
     let tokenHeaderKey = JWT_HEADER_NAME;
     let jwtSecretKey = SECRET;
@@ -100,24 +103,29 @@ app.post('/file/download', function(req,res,next){
         const verified = jwt.verify(token, jwtSecretKey);
         if(verified){
        var    decode= jwt.decode(token, jwtSecretKey)
+       console.log(decode);
+       username=decode.sub;
+       societe=decode.societe;
+       role=decode.roles;
+      console.log(societe);
       
        if( decode.roles !="ROLE_RH" ){
         let req_url = req.baseUrl+req.route.path;
       
-        if(req.method=="POST" || req.method=="PUT"  ){
+        if( (req.method=="POST" || req.method=="PUT") ){
              res.status(401).send("Unauthorized!");
         }
         else if(req_url.includes("/file/download")){
              res.status(401).send("Unauthorized!");
         }
     }
-//    else if (decode.roles !="ROLE_USER") {
-//     let req_url = req.baseUrl+req.route.path;
-//     if(req_url.includes("/file/upload/:id")){
-//          res.status(401).send("Unauthorized!");
-//     }
-     
-//     }
+   else if (decode.roles !="ROLE_USER") {
+    let req_url = req.baseUrl+req.route.path;
+    if(req_url.includes("/file/upload/:id")){
+         res.status(401).send("Unauthorized!");
+    }
+   
+    }
         }else{
             // Access Denied
              res.status(401).send("Unauthorized!");
@@ -132,28 +140,63 @@ app.post('/file/download', function(req,res,next){
 
 app.post("/stages",(req:Request,res:Response)=>{
     validateToken(req,res);
-    console.log("stage "+req.body.societe);
-    let stage=new Stage(req.body)
+    req.body.societe=societe;
+   // console.log("stage "+req.body.societe);
+    Stage.aggregate([
+        { "$match": { "sujet":req.body.sujet } },
+      
+        ],
+        function( err, data ) {
+      
+          if ( err )
+            throw err;
+            if (data.length==0) {
+                let stage=new Stage(req.body)
+   
     stage.save((err)=>{
         if (err) res.status(500).send(err)
             
          else  res.send(stage)
     })
+            }
+            else 
+            res.status(500).send("subject alradey used")
+        
+        })
+    
 })
 app.put("/stages/:id",(req:Request,res:Response)=>{
     validateToken(req,res);
-    let stage=Stage.findByIdAndUpdate(req.params.id,req.body,(err:any)=>{
-        if (err) res.status(500).send(err)
-            
-         else  res.send(req.body)
-    });
+    req.body.societe=societe;
+            let stage=Stage.findByIdAndUpdate(req.params.id,req.body,(err:any)=>{
+                if (err) res.status(500).send(err)
+                    
+                 else  res.send(req.body)
+            });
+         
+       
 
    
 })
 app.get("/stages",(req:Request,res:Response)=>{
    // res.send("<h1> Test Express avec type script<\h1>")
    validateToken(req,res);
-   Stage.find((err,stages)=>{
+if (role=="ROLE_RH") {
+    Stage.aggregate([
+        { "$match": { "societe": societe } },
+        ],
+        function( err, data ) {
+      
+          if ( err )
+            throw err;
+      
+        
+          res.send(data );
+        })
+}
+
+else {
+       Stage.find((err,stages)=>{
 if (err) {
     res.status(500).send(err)
     
@@ -161,6 +204,10 @@ if (err) {
     res.send(stages)
 }
    })
+}
+
+
+
 });
 app.get("/stages/:id",(req,res)=>{
     validateToken(req,res);

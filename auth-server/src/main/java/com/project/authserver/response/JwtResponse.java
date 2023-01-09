@@ -8,6 +8,7 @@ public class JwtResponse {
 	private String type = "Bearer";
 	private String id;
 	private String username;
+	private String societe;
 	private String email;
 	private String roles;
 
@@ -18,6 +19,27 @@ public class JwtResponse {
 		this.email = email;
 		this.roles = roles;
 	}
+	
+
+	public JwtResponse(String token, String id, String username, String societe, String email, String roles) {
+		this.token = token;
+		this.id = id;
+		this.username = username;
+		this.societe = societe;
+		this.email = email;
+		this.roles = roles;
+	}
+
+
+	public String getSociete() {
+		return societe;
+	}
+
+
+	public void setSociete(String societe) {
+		this.societe = societe;
+	}
+
 
 	public String getAccessToken() {
 		return token;

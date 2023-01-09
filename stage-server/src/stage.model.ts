@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
 let Stage=new mongoose.Schema({
+    
     societe:{type:String,required:true},
     sujet:{type:String,required:true},
     domaine:{type:String,required:false},

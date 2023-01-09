@@ -18,7 +18,7 @@ public class SignupRequest {
     @Size(max = 50)
     @Email
     private String email;
-    
+    private String societe;
 	
 	private String code;
 	
@@ -97,6 +97,14 @@ public class SignupRequest {
     
     public Set<String> getRoles() {
       return this.roles;
+    }
+
+    public String getSociete() {
+        return societe;
+    }
+
+    public void setSociete(String societe) {
+        this.societe = societe;
     }
     
     
